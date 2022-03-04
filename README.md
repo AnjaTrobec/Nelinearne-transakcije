@@ -1,1 +1,1 @@
-# Nelinerne-transakcije
+# Nelinearne-transakcije
