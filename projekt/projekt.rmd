@@ -1,0 +1,91 @@
+---
+title: "GEN-I: Nelinearne transakcije"
+subtitle: "Projekt pri predmetu: Matematika z racunalnikom"
+author: "Anja Trobec"
+date: "Maj 2022"
+output:
+  html_document:
+  fig_caption: no
+toc: no
+toc_depth: '3'
+params:
+  printcode: no
+printresults: hide
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(gridExtra)
+library(coda)
+library(knitr)
+```
+
+Imamo mesecno nelinearno transakcijo za elektricno energijo, kjer se lahko znotraj dolocenih omejitev za vsako uro znotraj meseca dobave lastnik opcijskosti odloci, koliko el. energije bo prevzeli/dobavil. Ovrednotimo jo napram mnozici cenovnih scenarijev, tako da za vsak cenovni scenarij dobimo njen profit. Cenovni scenariji so mozne prihodnje cene dobave, oblikovani tako, da ustrezno popisejo verjetnostno porazdelitev prihodnje cene v smislu njene srednje vrednosti in standardne deviacije (volatilnosit). Za to transakcijo zelimo poiskati njen ekvivalent standardne Evropske opcije. Kakšni so parametri ekvivalenta te opcije, kot kolicina, cena (strike), stran (nakup/prodaja) in tip (call/put) opcije?
+
+RESITEV:
+Iz grafa opazimo, da dobimo tipièno obliko 'long EU put option' oz. gre za nakup prodajne opcije. Gre za spekulacijo glede padca cene elektricne energije. 
+
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
+#getwd()
+#setwd("C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterski studij/matematika z racunalnikom/Nelinearne-transakcije/projekt")
+```
+
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
+# read data
+df <- read.csv("podatki.csv", sep=';', header = FALSE, stringsAsFactors=FALSE)
+colnames(df) <- c('Price','Profit')
+df
+
+price <- as.numeric(gsub(",", ".", df$Price))
+profit <- as.numeric(gsub(",", ".", df$Profit))
+```
+
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
+#plot data: PRICE vs PROFIT
+plot(x = price,
+     y = profit,
+     xlab = "Price",
+     ylab = "Profit",
+     main = "Price vs Profit")
+```
+
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
+#introducing EU PUT OPTION
+average_price <- mean(as.numeric(gsub(",", ".", df$Price)))
+average_price
+
+volatility_price <- sd(as.numeric(gsub(",", ".", df$Price)))
+volatility_price
+
+average_profit <- mean(as.numeric(gsub(",", ".", df$Profit)))
+average_profit
+```
+
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
+#value of the option, select a strike price
+
+K <- average_price
+value <- c(1:192)
+
+for (i in 1:length(price)){
+  value[i] <- max(K-price[i],0)
+}
+
+#premium
+premija <- c(1,192)
+
+for (i in 1:length(price)){
+  premija[i] <- value[i]-profit[i]
+}
+
+```
+
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
+#OPTIONS IN R
+callPayoff <- function(S,K) pmax(0,S-K)
+putPayoff <- function(S,K) pmax(0,K-S)
+```
+
+

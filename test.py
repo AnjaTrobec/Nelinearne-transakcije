@@ -1,6 +1,3 @@
-
-# Projektna naloga GEN-I
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -10,14 +7,5 @@ df = pd.read_csv(r'C:\Users\aanja\OneDrive\Dokumenti\fmf\magisterski študij\mat
 print(df)
 
 # Plot
-# plt.scatter(df['Price'], df['Profit']) 
-# plt.show()
-
-df.plot(kind='scatter', figsize=(10,10), x='Price',y='Profit' )
-plt.axis("off")
+plt.scatter(df['Price'], df['Profit']) 
 plt.show()
-
-#or 
-# df.plot(kind='scatter', x='Price', y='Profit', color='blue')
-# plt.show()
-
