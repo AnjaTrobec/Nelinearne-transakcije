@@ -1,5 +1,7 @@
 #GEN-I Nelinearne transakcije
 
+library(segmented)
+
 #_______________________________________________________________________________
 getwd()
 setwd("C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterski študij/matematika z raèunalnikom/Nelinearne-transakcije/projekt")
@@ -12,46 +14,6 @@ colnames(df) <- c('Price','Profit')
 price <- as.numeric(gsub(",", ".", df$Price))
 profit <- as.numeric(gsub(",", ".", df$Profit))
 profit <- profit / 1000 # profit / 1000 za lažjo predstavo, izbriši kasneje
-
-#________________________________________________________________________________
-#plot data
-
-plot(x = price,
-     y = profit,
-     xlab = "Cena (v €)",
-     ylab = "Profit (v tisoè €)",
-     main = "Cena vs Profit")
-
-# #________________________________________________________________________________
-#definiraj funkciji za vrednost opcije
-
-# VALUE OF EU PUT OPTION
-putV <- function(S,K) pmax(0,K-S)
-putPayoff <- function(S,K,premium) pmax(0-abs(premium),K-S-abs(premium))
-
-# VALUE OF EU PUT OPTION
-callV <- function(S,K) pmax(0,S-K)
-callPayoff <- function(S,K,premium) pmax(0-abs(premium),S-K-abs(premium))
-
-#________________________________________________________________________________
-# PREMIJA
-profit1 <-  rep(0,length(profit))
-iscem_premijo <- 0
-stevec_negativnih <- 0
-
-#vektor negativnih dobièkov
-for (i in 1:length(profit)){
-  if (profit[i] < 0){
-    profit1[i] <- profit[i]
-    stevec_negativnih <- stevec_negativnih + 1}
-}
-profit1 <- sort(profit1[ profit1 != 0 ])
-st <- round(stevec_negativnih*0.1,0) #odrežem zgornjih in spodnjih 10 %
-profit1 <- profit1[st:length(profit1)-st]
-premija <- mean(profit1)
-premija
-
-# plot(x = price,y = profit,xlab = "Cena (v €)",ylab = "Profit (v tisoè €)",xlim = c(200,225),ylim = c(-25,25),main = "Cena vs Profit")
 
 #________________________________________________________________________________
 # STRIKE PRICE
@@ -78,7 +40,84 @@ nicla
 nekaj = 5
 
 K = nicla + nekaj
+
+#________________________________________________________________________________
+#plot data
+plot(x = price,
+     y = profit,
+     xlab = "Cena (v €)",
+     ylab = "Profit (v tisoè €)",
+     main = "Cena vs Profit")
+abline(h = 0, col='blue')
+
+korelacija <- cor(price, profit)
+# fit <- lm(profit ~ price)
+# abline(fit$coefficients[1],fit$coefficients[2])
+
+# 1. premica
+price1 <- price[1:index]
+profit1 <- profit[1:length(price1)]
+fit <- lm(profit1~ price1)
+segmented.fit <- segmented(fit, seg.Z = ~ price1, psi=K)
+abline(segmented.fit$coefficients[1],segmented.fit$coefficients[2])
+
+# 2. premica
+price2 <- price[K:length(price)]
+profit2 <- profit[length(price1):length(profit)]
+fit <- lm(profit2 ~ price2)
+abline(fit$coefficients[1],fit$coefficients[2])
+
+
+poz_profit = rep(0,length(profit))
+neg_profit = rep(0,length(profit))
+
+
+for (i in 1:length(profit)){
+  if (profit[i] < 0){
+    neg_profit[i] <- profit[i]
+    stevec_negativnih <- stevec_negativnih + 1}
+  else {
+    poz_profit[i] <- profit[i]
+  }
+}
+# poz_profit <- (poz_profit[ poz_profit != 0 ])
+# neg_profit <- (neg_profit[ neg_profit != 0 ])
+
+abline(fit$coefficients[1],fit$coefficients[2])
+
+# #________________________________________________________________________________
+#definiraj funkciji za vrednost opcije
+
+# VALUE OF EU PUT OPTION
+putV <- function(S,K) pmax(0,K-S)
+putPayoff <- function(S,K,premium) pmax(0-abs(premium),K-S-abs(premium))
+
+# VALUE OF EU PUT OPTION
+callV <- function(S,K) pmax(0,S-K)
+callPayoff <- function(S,K,premium) pmax(0-abs(premium),S-K-abs(premium))
+#________________________________________________________________________________
+# PREMIJA
+profit1 <-  rep(0,length(profit))
+iscem_premijo <- 0
+stevec_negativnih <- 0
+
+#vektor negativnih dobièkov
+for (i in 1:length(profit)){
+  if (profit[i] < 0){
+    profit1[i] <- profit[i]
+    stevec_negativnih <- stevec_negativnih + 1}
+}
+profit1 <- sort(profit1[ profit1 != 0 ])
+st <- round(stevec_negativnih*0.1,0) #odrežem zgornjih in spodnjih 10 %
+profit1 <- profit1[st:length(profit1)-st]
+premija <- mean(profit1)
+premija
+
+# plot(x = price,y = profit,xlab = "Cena (v €)",ylab = "Profit (v tisoè €)",xlim = c(200,225),ylim = c(-25,25),main = "Cena vs Profit")
+
+#________________________________________________________________________________
 #_________________________________________________________________________________
+
 #par(mfrow=c(1,2))
 plot(x = price,
      y = profit,
