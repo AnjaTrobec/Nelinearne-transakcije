@@ -1,5 +1,4 @@
 # PRISTOP REŠEVANJA Z RISANJEM DVEH PREMIC - 
-
 getwd()
 setwd("C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterski študij/matematika z raèunalnikom/Nelinearne-transakcije/projekt")
 #________________________________________________________________________________
@@ -46,7 +45,7 @@ cene_poz <- price[indexi_poz_profit]
 
 fit <- lm(vrednosti_poz_profit ~ cene_poz)
 abline(fit$coefficients[1],fit$coefficients[2], col='cadetblue2', lwd=2)
-legend(x ='topright',legend=c('Podatki','y = Premija','Fit 2. premica'),col=c('black','darksalmon','cadetblue2'))
+legend(x='topright',legend=c('podatki','y = premija','fit 2. premica'),col=c('black','darksalmon','cadetblue2'), lty=c(NA,1,1),pch=c(1,NA,NA),lwd=c(1,2,2))
 
 # POIŠÈI K IN PREMIJO
 #premijo ocenim s povpreèjem neg. profitov
