@@ -2,14 +2,31 @@
 getwd()
 setwd("C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterski študij/matematika z raèunalnikom/Nelinearne-transakcije/projekt")
 #________________________________________________________________________________
+#Knjižnice
+library(nlme)
+#________________________________________________________________________________
 # preberi csv datoteko
 df <- read.csv("podatki.csv", sep=';', header = FALSE, stringsAsFactors=FALSE)
 colnames(df) <- c('Price','Profit')
+
+df[order(df$Price),]
 
 # pretvori niz v vektor stevilk
 price <- as.numeric(gsub(",", ".", df$Price))
 profit <- as.numeric(gsub(",", ".", df$Profit))
 profit <- profit / 1000 # profit / 1000 za lažjo predstavo, izbriši kasneje
+
+#________________________________________________________________________________
+# ugotovi za kakšno opcijo gre - najprej loèimo med put in call
+# 
+# for (i in 1:length(price)/2){
+#   if 
+# }
+
+
+
+
+
 #________________________________________________________________________________
 #nariši graf
 plot(x = price,
@@ -19,40 +36,6 @@ plot(x = price,
      main = "Cena vs Profit",
      pch = 1, cex=1.5)
 abline(h = 0, lty='dashed') #meja med poz in neg profiti
-
-#1. VODORAVNA PREMICA
-#ideja, razdelim vrednosti iz stolpca profit na izgubo in dobièek, vzamem povpreèje izgube, da izraèunam povpreèno premijo 
-# ali morda še boljši naèin - vzamem modus, ker prièakujemo izravnavo in išèemo vrednosti, ki se najveèkrat pojavi
-
-indexi_neg_profit <- which(profit < 0)
-vrednosti_neg_profiti <- round(sort(profit[indexi_neg_profit]),0)
-
-#oceni s povpreèjem negativnih profitov
-abline(h=mean(vrednosti_neg_profiti),col='darksalmon', lwd=2)
-
-# #oceni z modusom - najbolj pogosta vrednost
-# getmode <- function(v) {
-#   uniqv <- unique(v)
-#   uniqv[which.max(tabulate(match(v, uniqv)))]
-# }
-# modus <- getmode(vrednosti_neg_profiti)
-# abline(h=modus, col='red')
-
-#2. POŠEVNA PREMICA
-indexi_poz_profit <- which(profit > 0)
-vrednosti_poz_profit <- round(sort(profit[indexi_poz_profit]),0)
-cene_poz <- price[indexi_poz_profit]
-
-fit <- lm(vrednosti_poz_profit ~ cene_poz)
-abline(fit$coefficients[1],fit$coefficients[2], col='cadetblue2', lwd=2)
-legend(x='topright',legend=c('podatki','y = premija','fit 2. premica'),col=c('black','darksalmon','cadetblue2'), lty=c(NA,1,1),pch=c(1,NA,NA),lwd=c(1,2,2))
-
-# POIŠÈI K IN PREMIJO
-#premijo ocenim s povpreèjem neg. profitov
-premija = mean(vrednosti_neg_profiti)
-K = (premija-fit$coefficients[1])/fit$coefficients[2]
-
-
 
 
 # #NEUSPELI POSKUS
@@ -81,4 +64,5 @@ K = (premija-fit$coefficients[1])/fit$coefficients[2]
 # 
 # fit2 <- lm(profit2 ~ price2)
 # abline(fit2$coefficients[1],fit2$coefficients[2])
+
 
