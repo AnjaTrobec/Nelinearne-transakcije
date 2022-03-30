@@ -55,11 +55,9 @@ korelacija <- cor(price, profit)
 # abline(fit$coefficients[1],fit$coefficients[2])
 
 # 1. premica
-price1 <- price[1:index]
-profit1 <- profit[1:length(price1)]
-fit <- lm(profit1~ price1)
-segmented.fit <- segmented(fit, seg.Z = ~ price1, psi=K)
-abline(segmented.fit$coefficients[1],segmented.fit$coefficients[2])
+
+fit <- lm(profit~ price)
+abline(fit$coefficients[1],fit$coefficients[2])
 
 # 2. premica
 price2 <- price[K:length(price)]
