@@ -5,11 +5,6 @@ author: "Anja Trobec"
 date: "Maj 2022"
 output:
   html_document:
-  fig_caption: no
-toc: no
-toc_depth: '3'
-params:
-  printcode: no
 printresults: hide
 editor_options:
   chunk_output_type: console
@@ -22,17 +17,40 @@ library(coda)
 library(knitr)
 ```
 
-Imamo mesecno nelinearno transakcijo za elektricno energijo, kjer se lahko znotraj dolocenih omejitev za vsako uro znotraj meseca dobave lastnik opcijskosti odloci, koliko el. energije bo prevzeli/dobavil. Ovrednotimo jo napram mnozici cenovnih scenarijev, tako da za vsak cenovni scenarij dobimo njen profit. Cenovni scenariji so mozne prihodnje cene dobave, oblikovani tako, da ustrezno popisejo verjetnostno porazdelitev prihodnje cene v smislu njene srednje vrednosti in standardne deviacije (volatilnosit). Za to transakcijo zelimo poiskati njen ekvivalent standardne Evropske opcije. Kakšni so parametri ekvivalenta te opcije, kot kolicina, cena (strike), stran (nakup/prodaja) in tip (call/put) opcije?
+## NALOGA:
+Imamo mesecno nelinearno transakcijo za elektricno energijo, kjer se lahko znotraj dolocenih omejitev za vsako uro znotraj meseca dobave lastnik opcijskosti odloci, koliko el. energije bo prevzeli/dobavil. Ovrednotimo jo napram mnozici cenovnih scenarijev, tako da za vsak cenovni scenarij dobimo njen profit. Cenovni scenariji so mozne prihodnje cene dobave, oblikovani tako, da ustrezno popisejo verjetnostno porazdelitev prihodnje cene v smislu njene srednje vrednosti in standardne deviacije (volatilnosit). Za to transakcijo zelimo poiskati njen ekvivalent standardne Evropske opcije. Kaksni so parametri ekvivalenta te opcije, kot kolicina, cena (strike), stran (nakup/prodaja) in tip (call/put) opcije?
 
-RESITEV:
-Iz grafa opazimo, da dobimo tipièno obliko 'long EU put option' oz. gre za nakup prodajne opcije. Gre za spekulacijo glede padca cene elektricne energije. 
+## RESEVANJE:
+Za lazje razumevanje nadaljnega bi na tem mestu ponovila teorijo Evropskih opcij.
+Evropske opcije locimo na 
+* prodajne opcije (put options) in 
+* nakupne opcije (call options).
+Seveda tako put kot call opcijo lahko kupimo ali prodamo. To nas pripelje do stirih razlicnih situacij. Za lazje razumevanje prilagam slike vsake izmed situacij.
+
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
+# VALUE OF EU PUT OPTION
+putV <- function(S,K) pmax(0,K-S)
+putPayoff <- function(S,K,premium) pmax(0-abs(premium),K-S-abs(premium))
+
+# VALUE OF EU PUT OPTION
+callV <- function(S,K) pmax(0,S-K)
+callPayoff <- function(S,K,premium) pmax(0-abs(premium),S-K-abs(premium))
+
+
+x <- 0:100
+
+plot(x,callV(x,50),xlab = "Cena opcije", ylab = "Vrednost opcije", main = "Nakup EU call opcije")
+
+```
+
+
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
 #getwd()
 #setwd("C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterski studij/matematika z racunalnikom/Nelinearne-transakcije/projekt")
 ```
 
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
 # read data
 df <- read.csv("podatki.csv", sep=';', header = FALSE, stringsAsFactors=FALSE)
 colnames(df) <- c('Price','Profit')
@@ -40,6 +58,7 @@ df
 
 price <- as.numeric(gsub(",", ".", df$Price))
 profit <- as.numeric(gsub(",", ".", df$Profit))
+profit <- profit/1000
 ```
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
@@ -48,44 +67,279 @@ plot(x = price,
      y = profit,
      xlab = "Price",
      ylab = "Profit",
-     main = "Price vs Profit")
+     main = "Price vs Profit",
+     pch = 20, cex=1.5)
+abline(h = 0, lty='dashed')
 ```
 
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
-#introducing EU PUT OPTION
-average_price <- mean(as.numeric(gsub(",", ".", df$Price)))
-average_price
+Iz slike je jasno razvidno, da gre za nakup evropske prodajne opcije. Za dolocitev izvrsilne cene, kolicine in premije moramo najti ustrezno aproksimacijo z dvema premicama. Ti dve premici imata doloceno obliko, ena izmed njiju je vselej vodoravna, druga pa posevna s pozitivnim ali negativnim naklonom, seveda odvisno od vrste opcije.
 
-volatility_price <- sd(as.numeric(gsub(",", ".", df$Price)))
-volatility_price
 
-average_profit <- mean(as.numeric(gsub(",", ".", df$Profit)))
-average_profit
-```
 
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
-#value of the option, select a strike price
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
+#main function for EU option aproximation
 
-K <- average_price
-value <- c(1:192)
+opt_fit <- function(price, profit){
+  if (cor(price, profit) < 0){
+    #nakup put opcije (3) ali prodaja nakupne opcije (2)
+    
+    meja <- length(price)/4
+    povpr1 <- mean(profit[1:meja])
+    er1 <- 0
+    
+    for (i in 1:meja){
+      er1 <- er1 + (profit[i] - povpr1)^2}
+    
+    povpr1 <- mean(profit[(length(price)-meja):length(price)])
+    er2 <- 0
+    for (i in (length(price)-meja):length(price)){
+      er2 <- er2 + (profit[i] - povpr1)^2}
 
-for (i in 1:length(price)){
-  value[i] <- max(K-price[i],0)
+    
+    #NAKUP PUT OPCIJE
+    if (er1 > er2){
+      komentar <- paste("Gre za nakup put opcije.")
+      print(komentar)
+      
+      odstopanje1 <- rep(0,length(price)) #odstopanje pri aproksimaciji z vodoravno premico
+      odstopanje2 <- rep(0,length(price)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
+      #odstopanja <- rep(0,length(price)) #skupno odstopanje
+      najboljsi_K = 0
+      
+      
+      for (K in 1:length(price)){
+        #VODORAVNA PREMICA
+        premica1 <- profit[K]
+        napaka1 <- rep(0,length(price[K:length(profit)]))
+        profiti <- profit[K:length(profit)]
+        for (i in 1:length(napaka1)){
+          napaka1[i] <- (((premica1 - profiti[i])^2))
+        }
+        odstopanje1[K] <- sum(napaka1)
+        
+        
+        #POsEVNA PREMICA
+        premica2 <- lm(profit[1:K] ~ price[1:K])
+        odstopanje2[K] <- deviance(premica2)
+        odstopanje2[K]
+        
+        
+        # #ce pokaze kako vrednost 0 
+        # if(odstopanje1[K] == 0){
+        #   odstopanje1[K] = 5*10^10
+        # }
+        # if(odstopanje2[K] == 0){
+        #   odstopanje2[K] = 5*10^10
+        # }
+      }
+      
+      odstopanja <- odstopanje1 + odstopanje2
+      
+      najboljsi_K <- which(min(odstopanja) == odstopanja)
+      premica1 <- mean(profit[najboljsi_K:length(profit)])
+      abline(h = profit[najboljsi_K], col = 'red', lwd=2)
+      premica2 <- lm(profit[1:najboljsi_K] ~ price[1:najboljsi_K])
+      abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue',lwd=2)
+      najboljsi_K
+      
+      strike_price = price[najboljsi_K]
+      premija = profit[najboljsi_K]
+      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      print(komentar)
+        
+      }
+      
+  
+
+    #PRODAJA CALL OPCIJE
+    if (er2 > er1){
+      komentar <- paste("Gre za prodajo call opcije.")
+      print(komentar)
+
+      for (K in 1:(length(price))){
+        odstopanje1 <- rep(0,length(price)) #odstopanje pri aproksimaciji z vodoravno premico
+        odstopanje2 <- rep(0,length(price)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
+        #odstopanja <- rep(0,length(price)) #skupno odstopanje
+        najboljsi_K = 0
+
+        #VODORAVNA PREMICA
+        premica1 <- profit[K]
+        napaka1 <- rep(0,length(price[1:K]))
+        profiti <- profit[1:K]
+        for (i in 1:length(napaka1)){
+          napaka1[i] <- (((premica1 - profiti[i])^2))
+        }
+        odstopanje1[K] <- sum(napaka1)
+        
+        
+        #POsEVNA PREMICA
+        premica2 <- lm(profit[K:length(price)] ~ price[K:length(price)])
+        odstopanje2[K] <- deviance(premica2)
+        odstopanje2[K]
+
+      }
+
+      odstopanja <- odstopanje1 + odstopanje2
+      najboljsi_K <- which(min(odstopanja) == odstopanja)
+      premica1 <- profit[najboljsi_K]
+      abline(h = profit[najboljsi_K], col = 'red')
+      premica2 <- lm(profit[najboljsi_K:length(price)] ~ price[najboljsi_K:length(price)])
+      abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue')
+      najboljsi_K
+
+      strike_price = price[najboljsi_K]
+      premija = profit[najboljsi_K]
+      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      print(komentar)
+      
+    }
+
+    
+
+  }
+  if (cor(price, profit) > 0){
+    #nakup call opcije ali prodaja put opcije
+    #Ugotovi za katero gre:
+    meja <- length(price)/4
+    povpr1 <- mean(profit[1:meja])
+    er1 <- 0
+    
+    for (i in 1:meja){
+      er1 <- er1 + (profit[i] - povpr1)^2
+    }
+    
+    povpr1 <- mean(profit[(length(price)-meja):length(price)])
+    er2 <- 0
+    for (i in (length(price)-meja):length(price)){
+      er2 <- er2 + (profit[i] - povpr1)^2
+    }
+    
+    
+    #PRODAJA PUT OPCIJE
+    if (er1 > er2){
+      komentar <- paste("Gre za prodajo put opcije.")
+      print(komentar)
+      
+      odstopanje1 <- rep(0,length(price)) #odstopanje pri aproksimaciji z vodoravno premico
+      odstopanje2 <- rep(0,length(price)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
+      #odstopanja <- rep(0,length(price)) #skupno odstopanje
+      najboljsi_K = 0
+      
+      
+      for (K in 1:length(price)){
+        #VODORAVNA PREMICA
+        premica1 <- mean(profit[K:length(profit)])
+        napaka1 <- rep(0,length(price[K:length(profit)]))
+        profiti <- profit[K:length(profit)]
+        for (i in 1:length(napaka1)){
+          napaka1[i] <- (((premica1 - profiti[i])^2))
+        }
+        odstopanje1[K] <- sum(napaka1)
+        
+        
+        #POsEVNA PREMICA
+        premica2 <- lm(profit[1:K] ~ price[1:K])
+        odstopanje2[K] <- deviance(premica2)
+        odstopanje2[K]
+        
+        
+        # #ce pokaze kako vrednost 0 
+        # if(odstopanje1[K] == 0){
+        #   odstopanje1[K] = 5*10^10
+        # }
+        # if(odstopanje2[K] == 0){
+        #   odstopanje2[K] = 5*10^10
+        # }
+      }
+      
+      odstopanja <- odstopanje1 + odstopanje2
+      
+      najboljsi_K <- which(min(odstopanja) == odstopanja)
+      premica1 <- mean(profit[najboljsi_K:length(profit)])
+      abline(h = profit[najboljsi_K], col = 'red')
+      premica2 <- lm(profit[1:najboljsi_K] ~ price[1:najboljsi_K])
+      abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue')
+      najboljsi_K
+      
+      strike_price = price[najboljsi_K]
+      premija = profit[najboljsi_K]
+      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      print(komentar)
+      
+    }
+    
+    
+    
+    #NAKUP CALL OPCIJE
+    if (er2 > er1){
+      komentar <- paste("Gre za nakup call opcije.")
+      print(komentar)
+      
+      for (K in 1:(length(price))){
+        odstopanje1 <- rep(0,length(price)) #odstopanje pri aproksimaciji z vodoravno premico
+        odstopanje2 <- rep(0,length(price)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
+        # odstopanja <- rep(0,length(price)) #skupno odstopanje
+        najboljsi_K = 0
+        
+        #VODORAVNA PREMICA
+        premica1 <- mean(profit[1:K])
+        napaka1 <- rep(0,length(price[1:K]))
+        profiti <- profit[1:K]
+        for (i in 1:length(napaka1)){
+          napaka1[i] <- (((premica1 - profiti[i])^2))
+        }
+        odstopanje1[K] <- sum(napaka1)
+        
+        
+        #POsEVNA PREMICA
+        premica2 <- lm(profit[K:length(price)] ~ price[K:length(price)])
+        odstopanje2[K] <- deviance(premica2)
+        odstopanje2[K]
+        
+      }
+      
+      odstopanja <- odstopanje1 + odstopanje2
+      najboljsi_K <- which(min(odstopanja) == odstopanja)
+      premica1 <- profit[najboljsi_K]
+      abline(h = profit[najboljsi_K], col = 'red')
+      premica2 <- lm(profit[najboljsi_K:length(price)] ~ price[najboljsi_K:length(price)])
+      abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue')
+      najboljsi_K
+      
+      strike_price = price[najboljsi_K]
+      premija = profit[najboljsi_K]
+      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      print(komentar)
+      
+    }
+  }
 }
-
-#premium
-premija <- c(1,192)
-
-for (i in 1:length(price)){
-  premija[i] <- value[i]-profit[i]
-}
-
 ```
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
-#OPTIONS IN R
-callPayoff <- function(S,K) pmax(0,S-K)
-putPayoff <- function(S,K) pmax(0,K-S)
+#1. podatki, nakup prodajne opcije
+df <- read.csv("podatki.csv", sep=';', header = FALSE, stringsAsFactors=FALSE)
+colnames(df) <- c('Price','Profit')
+if (df$Price[2] > df$Price[3]){
+  df <- df[order(df$Price),]} #podatke uredim po cene padajoce
+df
+price <- as.numeric(gsub(",", ".", df$Price))
+profit <- as.numeric(gsub(",", ".", df$Profit))
+profit <- profit / 1000
+
+korelacija1 <- cor(price, profit)
+korelacija1
+#narisi graf
+plot(x = price,
+     y = profit,
+     xlab = "Cena (v eur)",
+     ylab = "Profit (v tisoc eur)",
+     main = "Cena vs Profit",
+     pch = 20, cex=1.5)
+abline(h = 0, lty='dashed')
+
+opt_fit(price,profit)
 ```
+
 
 
