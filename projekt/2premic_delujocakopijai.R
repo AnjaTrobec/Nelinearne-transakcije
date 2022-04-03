@@ -1,6 +1,6 @@
 # PRISTOP REŠEVANJA Z RISANJEM DVEH PREMIC
 getwd()
-setwd("C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterski študij/matematika z raèunalnikom/Nelinearne-transakcije/projekt")
+setwd("C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterij/matematika z racunalnikom/Nelinearne-transakcije/projekt")
 #________________________________________________________________________________
 #Knjižnice
 library(nlme)

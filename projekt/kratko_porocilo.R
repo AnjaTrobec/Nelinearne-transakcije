@@ -1,17 +1,16 @@
 ---
-title: "GEN-I: Nelinearne transakcije"
-subtitle: "Projekt pri predmetu: Matematika z racunalnikom"
+  title: "GEN-I: Nelinearne transakcije"
+subtitle: "Kratko porocilo"
 author: "Anja Trobec"
-date: "Maj 2022"
+date: "April 2022"
 output:
-  word_document:
   html_document:
-printresults: hide
+  printresults: hide
 editor_options:
   chunk_output_type: console
 ---
-
-```{r setup, include=FALSE}
+  
+  ```{r setup, include=FALSE}
 library(tidyverse)
 library(gridExtra)
 library(coda)
@@ -19,24 +18,24 @@ library(knitr)
 ```
 
 <center> <h2> NAVODILA ZA IZDELAVO PROJEKTA </h2> </center>
-
-Imamo mesecno nelinearno transakcijo za elektricno energijo, kjer se lahko znotraj dolocenih omejitev za vsako uro znotraj meseca dobave lastnik opcijskosti odloci, koliko el. energije bo prevzeli/dobavil. Ovrednotimo jo napram mnozici cenovnih scenarijev, tako da za vsak cenovni scenarij dobimo njen profit. Cenovni scenariji so mozne prihodnje cene dobave, oblikovani tako, da ustrezno popisejo verjetnostno porazdelitev prihodnje cene v smislu njene srednje vrednosti in standardne deviacije (volatilnosit). Za to transakcijo zelimo poiskati njen ekvivalent standardne Evropske opcije. Kaksni so parametri ekvivalenta te opcije, kot kolicina, cena (strike), stran (nakup/prodaja) in tip (call/put) opcije?
-
-<center> <h2> PROJEKT </h2> </center>
-
-<h3> 1. TEORETICNI UVOD </h3>
-
-Moja glavna naloga je poiskati Evropsko opcijo, ki se najbolje pribliza transakciji predstavljeni v podatkih. Vhodni podatki so pari, v katerih prva komponenta predstavlja ceno in druga profit pri dani ceni. 
+  
+  Imamo mesecno nelinearno transakcijo za elektricno energijo, kjer se lahko znotraj dolocenih omejitev za vsako uro znotraj meseca dobave lastnik opcijskosti odloci, koliko el. energije bo prevzeli/dobavil. Ovrednotimo jo napram mnozici cenovnih scenarijev, tako da za vsak cenovni scenarij dobimo njen profit. Cenovni scenariji so mozne prihodnje cene dobave, oblikovani tako, da ustrezno popisejo verjetnostno porazdelitev prihodnje cene v smislu njene srednje vrednosti in standardne deviacije (volatilnosit). Za to transakcijo zelimo poiskati njen ekvivalent standardne Evropske opcije. Kaksni so parametri ekvivalenta te opcije, kot kolicina, cena (strike), stran (nakup/prodaja) in tip (call/put) opcije?
+  
+  <center> <h2> PROJEKT </h2> </center>
+  
+  <h3> 1. TEORETICNI UVOD </h3>
+  
+  Moja glavna naloga je poiskati Evropsko opcijo, ki se najbolje pribliza transakciji predstavljeni v podatkih. Vhodni podatki so pari, v katerih prva komponenta predstavlja ceno in druga profit pri dani ceni. 
 
 Evropski opciji, ki bo ekvivalentna transakciji, je potrebno dolociti parametre. To so:
-
-* v naprej dogovorjena izvrsilna cena (angl. strike price), 
+  
+  * v naprej dogovorjena izvrsilna cena (angl. strike price), 
 * kolicina in 
 * placana ali prejeta premija.
 
 Dolociti moramo **tip opcije**. Lahko gre za:
-
-* **nakupno opcijo** (*angl. call option*) ali 
+  
+  * **nakupno opcijo** (*angl. call option*) ali 
 * **prodajno opcijo** (*angl. put option*). 
 
 Znotraj obeh tipov opcij, locimo se pozicijo, ki jo zavzamemo. Lahko smo v vlogi izdajatelja opcije (*angl. option writer*) in v tem primeru **opcijo prodamo** ali pa **opcijo kupimo** in s tem postanemo lastnik opcije (*angl. option buyer*).
@@ -44,55 +43,55 @@ Znotraj obeh tipov opcij, locimo se pozicijo, ki jo zavzamemo. Lahko smo v vlogi
 S tem smo prisli do stirih razlicnih situacij, med katerimi iscemo tisto, ki najbolje opise dano transakcijo. Podrobneje si poglejmo vsako izmed moznih izbir.
 
 <br>
-
-<h4> 1. NAKUP EVROPSKE NAKUPNE OPCIJE </h4>
-
-Nakupna opcija podeljuje lastniku pravico za nakup dolocenega financnega instrumenta (angl. *underlying asset*) po vnaprej doloceni izvrsilni ceni na dolocen dan (kadar govorimo o Evropski opciji) ali do dolocenega dne (kadar imamo opravka z Amerisko opcijo). Lastniku nakupna opcija ne predstavlja obveznosti, pac pa priloznost (recemo, da mu nudi opcijskost), da opcijo izvrsi v primeru, ce cena financnega instrumenta na trgu naraste. Za nakupno opcijo recemo, da je:
-
-* **in the money** - ce je cena financnega instrumenta nad izvrsilno ceno,
+  
+  <h4> 1. NAKUP EVROPSKE NAKUPNE OPCIJE </h4>
+  
+  Nakupna opcija podeljuje lastniku pravico za nakup dolocenega financnega instrumenta (angl. *underlying asset*) po vnaprej doloceni izvrsilni ceni na dolocen dan (kadar govorimo o Evropski opciji) ali do dolocenega dne (kadar imamo opravka z Amerisko opcijo). Lastniku nakupna opcija ne predstavlja obveznosti, pac pa priloznost (recemo, da mu nudi opcijskost), da opcijo izvrsi v primeru, ce cena financnega instrumenta na trgu naraste. Za nakupno opcijo recemo, da je:
+  
+  * **in the money** - ce je cena financnega instrumenta nad izvrsilno ceno,
 * **at the money** - ce sta cena financnega instrumenta in izvrsilna cena enaki,
 * **put of the money** - ce je cena financnega instumenta pod izvrsilno ceno.
 
 Opazimo, da ima kupec evropske nakupne opcije neomejen dobicek in na drugi strani izgubo omejeno s premijo. Drugace povedano, najvec kar lahko kupec izgubi je premija, ki jo placa za nakup opcije v primeru, da opcije ne izvrsi. 
 
 Formula za vrednotenje izplacil opcije ob casu t: 
-$$ V_t = max(S_t-K,0) = (S_t - K)^+ $$
-
-<br>
-
- <h4> 2. NAKUP EVROPSKE PRODAJNE OPCIJE </h4>
-
-Prodajna opcija podeljuje lastniku pravico za prodajo dolocenega financnega instrumenta (angl. *underlying asset*) po vnaprej doloceni izvrsilni ceni na dolocen dan (kadar govorimo o Evropski opciji) ali do dolocenega dne (kadar imamo opravka z Amerisko opcijo). Lastniku nakupna opcija ne predstavlja obveznosti, pac pa priloznost (recemo, da mu nudi opcijskost), da opcijo izvrsi v primeru, ce cena financnega instrumenta na trgu pade. Za nakupno opcijo recemo, da je:
-
-* **in the money** - ce je cena financnega instrumenta pod izvrsilno ceno,
+  $$ V_t = max(S_t-K,0) = (S_t - K)^+ $$
+  
+  <br>
+  
+  <h4> 2. NAKUP EVROPSKE PRODAJNE OPCIJE </h4>
+  
+  Prodajna opcija podeljuje lastniku pravico za prodajo dolocenega financnega instrumenta (angl. *underlying asset*) po vnaprej doloceni izvrsilni ceni na dolocen dan (kadar govorimo o Evropski opciji) ali do dolocenega dne (kadar imamo opravka z Amerisko opcijo). Lastniku nakupna opcija ne predstavlja obveznosti, pac pa priloznost (recemo, da mu nudi opcijskost), da opcijo izvrsi v primeru, ce cena financnega instrumenta na trgu pade. Za nakupno opcijo recemo, da je:
+  
+  * **in the money** - ce je cena financnega instrumenta pod izvrsilno ceno,
 * **at the money** - ce sta cena financnega instrumenta in izvrsilna cena enaki,
 * **put of the money** - ce je cena financnega instumenta nad izvrsilno ceno.
 
 Enako kot pri nakupu evropske nakupne opcije lahko opazimo, da ima kupec evropske prodajne opcije neomejen dobicek in na drugi strani izgubo omejeno s premijo. Drugace povedano, najvec kar lahko kupec izgubi je premija, ki jo placa za nakup opcije v primeru, da opcije ne izvrsi. 
 Formula za vrednotenje izplacil opcije ob casu t: 
-$$ V_t = max(K-S_t,0) = (K-S_t)^+ $$
-
-<br>
-
-
-<h4> 3. PRODAJA EVROPSKE NAKUPNE OPCIJE </h4>
-
-Zdaj se postavimo v vlogo izdajatelja opcije. S tem ko opcijo prodamo, se zavezemo k izplacilu v primeru, da kupec opcijo izvrsi. Torej je v tem primeru dobicek navzgor omejen s prejeto premijo in izguba navzdol neomejena v primeru, da cena na trgu naraste. 
-
-Formula za vrednotenje izplacil opcije ob casu t: 
-$$ V_t = min(K-S_t,0) - max(S_t-K,0) = (K-S_t)^- - (S_t - K)^+ $$
-
-<br>
-
-<h4> 4. PRODAJA EVROPSKE PRODAJNE OPCIJE </h4>
-
-Zadnji scenarij pa je prodaja evropske prodajne opcije. Izdajatelj prodajne opcije opcijo proda, zanjo prejme premijo in se zaveze k izplacilu v primeru, da lastnik opcijo izvrsi. Ponovno je njegova izguba navzdol neomejena, medtem ko je dobicek navzgor omejen s prejeto premijo.
+  $$ V_t = max(K-S_t,0) = (K-S_t)^+ $$
+  
+  <br>
+  
+  
+  <h4> 3. PRODAJA EVROPSKE NAKUPNE OPCIJE </h4>
+  
+  Zdaj se postavimo v vlogo izdajatelja opcije. S tem ko opcijo prodamo, se zavezemo k izplacilu v primeru, da kupec opcijo izvrsi. Torej je v tem primeru dobicek navzgor omejen s prejeto premijo in izguba navzdol neomejena v primeru, da cena na trgu naraste. 
 
 Formula za vrednotenje izplacil opcije ob casu t: 
-$$ V_t = min(S_t-K,0) = (S_t-K)^-  $$
+  $$ V_t = min(K-S_t,0) - max(S_t-K,0) = (K-S_t)^- - (S_t - K)^+ $$
+  
+  <br>
+  
+  <h4> 4. PRODAJA EVROPSKE PRODAJNE OPCIJE </h4>
+  
+  Zadnji scenarij pa je prodaja evropske prodajne opcije. Izdajatelj prodajne opcije opcijo proda, zanjo prejme premijo in se zaveze k izplacilu v primeru, da lastnik opcijo izvrsi. Ponovno je njegova izguba navzdol neomejena, medtem ko je dobicek navzgor omejen s prejeto premijo.
 
-
-Poglejmo si izplacila vseh stirih opcij na spodnji sliki. 
+Formula za vrednotenje izplacil opcije ob casu t: 
+  $$ V_t = min(S_t-K,0) = (S_t-K)^-  $$
+  
+  
+  Poglejmo si izplacila vseh stirih opcij na spodnji sliki. 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
 # VALUE OF EU PUT OPTION
 putV <- function(S,K) pmax(0,K-S)
@@ -135,8 +134,8 @@ abline(h = premija, lty= 'dashed')
 
 
 <h3> 2. PRISTOP K RESEVANJU PROBLEMA </h3>
-
-Resevanje problema se lotimo tako, da vhodne podatke preberemo in graficno upodobimo. V nekaterih primerih bo ze iz zacetne slike jasno, kateri izmed stirih situacij pripada transakcija. En izmed takih je predstavljen v nadaljevanju.
+  
+  Resevanje problema se lotimo tako, da vhodne podatke preberemo in graficno upodobimo. V nekaterih primerih bo ze iz zacetne slike jasno, kateri izmed stirih situacij pripada transakcija. En izmed takih je predstavljen v nadaljevanju.
 
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
@@ -162,25 +161,25 @@ abline(h = 0, lty='dashed')
 ```
 
 Iz slike je jasno razvidno, da gre za nakup evropske prodajne opcije. Torej vse kar nam preostane je le se dolocitev parametrov. Dolociti moramo izvrsilno ceno, kolicino in premijo. Kako to najlazje storimo?
-
-Ocitno je, da so vse stiri upodobitve opcij sestavljene iz dveh premic, ki imata v vseh primerih zelo podobno oblika. Ena izmed premic je vselej vzporedna x osi, druga pa ima pozitiven ali negativen naklon. Ideja je, da vsako vhodno transakcijo aproksimiramo s kombinacijo teh dveh crt, ugotovimo za katero opcijo gre in iz naklona in zacetne vrednosti optimalnih premic dolocimo preostale parametre. 
+  
+  Ocitno je, da so vse stiri upodobitve opcij sestavljene iz dveh premic, ki imata v vseh primerih zelo podobno oblika. Ena izmed premic je vselej vzporedna x osi, druga pa ima pozitiven ali negativen naklon. Ideja je, da vsako vhodno transakcijo aproksimiramo s kombinacijo teh dveh crt, ugotovimo za katero opcijo gre in iz naklona in zacetne vrednosti optimalnih premic dolocimo preostale parametre. 
 
 Premica, ki bo vselej vodoravna doloca premijo:
-$$ y = 	premija $$
-Premica s pozitivnim ali negativnim naklonom pa kolicino (Q):
-
-$$ y = 	kolicina * S_t + n$$
-Iz presecisca zgornjih premic dobimo izvrsilno ceno (K):
-
-$$ K = \frac{premija - n}{kolicina} $$
-Iz vsega opisanega lahko sestavimo algoritem, ki bo izracunal iskane parametre in odgovoril na vprasanje za katero opcijo gre. Algoritem sprejme tabelo sestavljeno iz dveh stolpcev. V prvem stolpcu najdemo ceno financnega instrumenta in v drugem stolpcu najdemo profit pri tej ceni. Algoritem podatke prebere in odloci, za kaksno vrsto opcije gre. To stori na naslednji nacin:
-
-1. Izracuna korelacijo med podatki. 
+  $$ y = 	premija $$
+  Premica s pozitivnim ali negativnim naklonom pa kolicino (Q):
+  
+  $$ y = 	kolicina * S_t + n$$
+  Iz presecisca zgornjih premic dobimo izvrsilno ceno (K):
+  
+  $$ K = \frac{premija - n}{kolicina} $$
+  Iz vsega opisanega lahko sestavimo algoritem, ki bo izracunal iskane parametre in odgovoril na vprasanje za katero opcijo gre. Algoritem sprejme tabelo sestavljeno iz dveh stolpcev. V prvem stolpcu najdemo ceno financnega instrumenta in v drugem stolpcu najdemo profit pri tej ceni. Algoritem podatke prebere in odloci, za kaksno vrsto opcije gre. To stori na naslednji nacin:
+  
+  1. Izracuna korelacijo med podatki. 
 ** Ce je korelacija negativna, takoj vemo, da gre za nakup prodajne opcije ali za prodajo nakupne opcije. 
 ** Ce je korelacija pozitivna, pa nam preostane prodaja prodajne opcije ali nakup nakupne opcije. 
 
 2. Zdaj izbiramo le se med dvema moznostima. Odlocitev ali gre za nakupno ali prodajno opcijo sprejmemo na podlagi velikosti napake, ki se pojavi pri aproksimaciji z eno ali z drugo kombinacijo premic. Izbiramo torej med kombinacijama:
-* prva premica bo vodoravna in druga z nenicelnim naklonom ali
+  * prva premica bo vodoravna in druga z nenicelnim naklonom ali
 * prva premica bo imela nenicelni naklon in druga bo vodoravna.
 Z enostavno primerjavo napak smo nasli ustrezno obliko za aproksimacijo. 
 
@@ -188,7 +187,7 @@ Prisli smo do jedra algoritma v katerem iscemo optimalno prileganje izbrane opci
 
 
 Poglejmo kaj nam vrne opisani algoritem:
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
+  ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
 opt_fit <- function(price, profit){
   if (cor(price, profit) < 0){
     #nakup put opcije (3) ali prodaja nakupne opcije (2)
@@ -203,18 +202,18 @@ opt_fit <- function(price, profit){
     er2 <- 0
     for (i in (length(price)-meja):length(price)){
       er2 <- er2 + (profit[i] - povpr1)^2}
-
+    
     
     #1. NAKUP PUT OPCIJE__________________________________________________________
     if (er1 > er2){
       komentar <- paste("Gre za nakup put opcije.")
       print(komentar)
-
+      
       odstopanje1 <- rep(0,length(price)) #odstopanje pri aproksimaciji z vodoravno premico
       odstopanje2 <- rep(0,length(price)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
       najboljsi_K = 0
-
-
+      
+      
       #GLAVNA ZANKA
       for (K in 1:length(price)){
         #VODORAVNA PREMICA
@@ -225,16 +224,16 @@ opt_fit <- function(price, profit){
           napaka1[i] <- (((premica1 - profiti[i])^2))
         }
         odstopanje1[K] <- sum(napaka1)
-
-
+        
+        
         #POsEVNA PREMICA
         premica2 <- lm(profit[1:K] ~ price[1:K])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]
       }
-
+      
       odstopanja <- odstopanje1 + odstopanje2
-
+      
       najboljsi_K <- which(min(odstopanja) == odstopanja)
       premica1 <- mean(profit[najboljsi_K:length(profit)])
       abline(h = profit[najboljsi_K], col = 'red', lwd=2)
@@ -242,14 +241,14 @@ opt_fit <- function(price, profit){
       abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue',lwd=2)
       najboljsi_K
       points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
-
+      
       strike_price = price[najboljsi_K]
       premija = profit[najboljsi_K]
       komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
       print(komentar)
-
-      }
-
+      
+    }
+    
     #PRODAJA CALL OPCIJE__________________________________________________________
     
     if (er2 > er1){
@@ -294,7 +293,7 @@ opt_fit <- function(price, profit){
   
   if (cor(price, profit) > 0){
     #nakup call opcije ali prodaja put opcije
-
+    
     meja <- length(price)/4
     povpr1 <- mean(profit[1:meja])
     er1 <- 0

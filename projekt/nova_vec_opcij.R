@@ -1,5 +1,11 @@
 # Delo na razliènih podatkih
 opt_fit <- function(price, profit){
+  
+  getmode <- function(v) {
+    uniqv <- unique(v)
+    uniqv[which.max(tabulate(match(v, uniqv)))]
+  }
+  
   if (cor(price, profit) < 0){
     #nakup put opcije (3) ali prodaja nakupne opcije (2)
     meja <- length(price)/4
@@ -15,51 +21,51 @@ opt_fit <- function(price, profit){
       er2 <- er2 + (profit[i] - povpr1)^2}
 
     
-    #1. NAKUP PUT OPCIJE__________________________________________________________
-    if (er1 > er2){
-      komentar <- paste("Gre za nakup put opcije.")
-      print(komentar)
-
-      odstopanje1 <- rep(0,length(price)) #odstopanje pri aproksimaciji z vodoravno premico
-      odstopanje2 <- rep(0,length(price)) #odstopanje pri aproksimaciji z linearno regresijo (poševni del)
-      najboljsi_K = 0
-
-
-      #GLAVNA ZANKA
-      for (K in 1:length(price)){
-        #VODORAVNA PREMICA
-        premica1 <- profit[K]
-        napaka1 <- rep(0,length(price[K:length(profit)]))
-        profiti <- profit[K:length(profit)]
-        for (i in 1:length(napaka1)){
-          napaka1[i] <- (((premica1 - profiti[i])^2))
-        }
-        odstopanje1[K] <- sum(napaka1)
-
-
-        #POŠEVNA PREMICA
-        premica2 <- lm(profit[1:K] ~ price[1:K])
-        odstopanje2[K] <- deviance(premica2)
-        odstopanje2[K]
-      }
-
-      odstopanja <- odstopanje1 + odstopanje2
-
-      najboljsi_K <- which(min(odstopanja) == odstopanja)
-      premica1 <- mean(profit[najboljsi_K:length(profit)])
-      abline(h = profit[najboljsi_K], col = 'red', lwd=2)
-      
-      premica2 <- lm(profit[1:najboljsi_K] ~ price[1:najboljsi_K])
-      abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue',lwd=2)
-      najboljsi_K
-
-      points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green", pch=19)
-      strike_price = price[najboljsi_K]
-      premija = profit[najboljsi_K]
-      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
-      print(komentar)
-
-      }
+    # #1. NAKUP PUT OPCIJE__________________________________________________________
+    # if (er1 > er2){
+    #   komentar <- paste("Gre za nakup put opcije.")
+    #   print(komentar)
+    # 
+    #   odstopanje1 <- rep(0,length(price)) #odstopanje pri aproksimaciji z vodoravno premico
+    #   odstopanje2 <- rep(0,length(price)) #odstopanje pri aproksimaciji z linearno regresijo (poševni del)
+    #   najboljsi_K = 0
+    # 
+    # 
+    #   #GLAVNA ZANKA
+    #   for (K in 1:length(price)){
+    #     #VODORAVNA PREMICA
+    #     premica1 <- profit[K]
+    #     napaka1 <- rep(0,length(price[K:length(profit)]))
+    #     profiti <- profit[K:length(profit)]
+    #     for (i in 1:length(napaka1)){
+    #       napaka1[i] <- (((premica1 - profiti[i])^2))
+    #     }
+    #     odstopanje1[K] <- sum(napaka1)
+    # 
+    # 
+    #     #POŠEVNA PREMICA
+    #     premica2 <- lm(profit[1:K] ~ price[1:K])
+    #     odstopanje2[K] <- deviance(premica2)
+    #     odstopanje2[K]
+    #   }
+    # 
+    #   odstopanja <- odstopanje1 + odstopanje2
+    # 
+    #   najboljsi_K <- which(min(odstopanja) == odstopanja)
+    #   premica1 <- mean(profit[najboljsi_K:length(profit)])
+    #   abline(h = profit[najboljsi_K], col = 'red', lwd=2)
+    #   
+    #   premica2 <- lm(profit[1:najboljsi_K] ~ price[1:najboljsi_K])
+    #   abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue',lwd=2)
+    #   najboljsi_K
+    # 
+    #   points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green", pch=19)
+    #   strike_price = price[najboljsi_K]
+    #   premija = profit[najboljsi_K]
+    #   komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+    #   print(komentar)
+    # 
+    #   }
 
   
 
@@ -93,11 +99,13 @@ opt_fit <- function(price, profit){
       najboljsi_K <- which(min(odstopanja) == odstopanja)
       premica1 <- profit[najboljsi_K]
       abline(h = profit[najboljsi_K], col = 'red', lwd=2)
+      
+      
       premica2 <- lm(profit[najboljsi_K:length(price)] ~ price[najboljsi_K:length(price)])
       abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue', lwd=2)
       najboljsi_K
       
-      points(x = price[najboljsi_K], y = profit[najboljsi_K],type = "p", col = "green", pch=19)
+      points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green", pch=19)
       strike_price = price[najboljsi_K]
       premija = profit[najboljsi_K]
       komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
