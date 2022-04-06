@@ -4,7 +4,6 @@ subtitle: "Kratko porocilo"
 author: "Anja Trobec"
 date: "April 2022"
 output:
-  word_document:
   html_document:
   printresults: hide
 editor_options:
@@ -26,75 +25,27 @@ library(knitr)
   
   <h3> 1. TEORETICNI UVOD </h3>
   
-  Moja glavna naloga je poiskati Evropsko opcijo, ki se najbolje pribliza transakciji predstavljeni v podatkih. Vhodni podatki so pari, v katerih prva komponenta predstavlja ceno (*$S_t$* - *cena ob casu t*) in druga komponenta profit pri dani ceni (*$V_t$* - *vrednost opcije v casu t*). 
+Moja naloga je poiskati Evropsko opcijo, ki najboljse opise transakcijo predstavljeni v podatkih. Vhodni podatki so pari, v katerih prva komponenta predstavlja ceno (*$S_t$* - *cena ob casu t*) in druga komponenta profit pri dani ceni (*$V_t$* - *vrednost opcije v casu t*). Cena je izrazena v EUR/MWh, profit pa v EUR.
   
   $$(S_t,V_t) $$
 
-Iskani Evropski opciji, ki bo ekvivalentna transakciji, je potrebno dolociti parametre:
+Iskani Evropski opciji, ki bo ekvivalentna transakciji, je potrebno dolociti najslednje parametre:
   
-* v naprej dogovorjena izvrsilna cena ($K$, *angl. strike price*), 
-* kolicina ($Q$) in 
-* placana ali prejeta premija (*angl. option premium*).
+* izvrsilno cena ($K$, *angl. strike price*), 
+* kolicino ($Q$) in 
+* placano ali prejeto premijo (*angl. option premium*).
 
 Dolociti je potrebno tudi **tip opcije**. Lahko gre za:
   
 * **nakupno opcijo** (*angl. call option*) ali 
 * **prodajno opcijo** (*angl. put option*). 
 
-Znotraj obeh tipov opcij, locimo se pozicijo, ki jo zavzamemo. Lahko smo v vlogi izdajatelja opcije (*angl. option writer*) in v tem primeru **opcijo prodamo** ali pa **opcijo kupimo** in s tem postanemo lastnik opcije (*angl. option buyer*).
+Znotraj obeh tipov opcij, locimo se dve poziciji, kateri lahko zavzamemo. Lahko smo v vlogi izdajatelja opcije (*angl. option writer*) in v tem primeru **opcijo prodamo** ali pa **opcijo kupimo** in s tem postanemo lastnik opcije (*angl. option buyer*).
 
-S tem smo prisli do stirih razlicnih situacij, med katerimi iscemo tisto, ki najbolje opise dano transakcijo. Podrobneje si poglejmo vsako izmed moznih izbir.
+To nas pripelje do stirih razlicnih situacij, med katerimi iscemo tisto, ki najbolje opise dano transakcijo.
 
-<br>
-  
-  <h4> 1. NAKUP EVROPSKE NAKUPNE OPCIJE </h4>
-  
- **Nakupna opcija** podeljuje  **lastniku (kupcu opcije)** pravico za nakup dolocenega financnega instrumenta (*angl. underlying asset*) po vnaprej doloceni izvrsilni ceni na dolocen dan (kadar govorimo o Evropski opciji) ali do dolocenega dne (kadar imamo opravka z Amerisko opcijo). Lastniku nakupna opcija ne predstavlja obveznosti, pac pa priloznost (recemo, da mu nudi opcijskost), da opcijo izvrsi v primeru, ce cena financnega instrumenta na trgu naraste. Za nakupno opcijo recemo, da je:
-  
-* **in the money** - kadar je cena financnega instrumenta nad izvrsilno ceno,
-* **at the money** - kadar sta cena financnega instrumenta in izvrsilna cena enaki,
-* **put of the money** - kadar je cena financnega instumenta pod izvrsilno ceno.
+OPOMBA: obravnavamo le Evropske opcije. 
 
-Opazimo, da ima kupec evropske nakupne opcije  **neomejen dobicek** in na drugi strani  **izgubo omejeno s placano premijo**. Drugace povedano, najvec kar lahko kupec izgubi je premija, ki jo placa za nakup opcije v primeru, da opcije ne izvrsi. 
-
-Formula za vrednotenje izplacil opcije ob casu t: 
-  $$ V_t = max(S_t-K,0) = (S_t - K)^+ $$
-  
-  <br>
-  
-  <h4> 2. NAKUP EVROPSKE PRODAJNE OPCIJE </h4>
-  
- **Prodajna opcija** podeljuje  **lastniku (kupcu opcije) ** pravico za prodajo dolocenega financnega instrumenta (*angl. underlying asset*) po vnaprej doloceni izvrsilni ceni na dolocen dan (kadar govorimo o Evropski opciji) ali do dolocenega dne (kadar imamo opravka z Amerisko opcijo). Lastniku nakupna opcija ne predstavlja obveznosti, pac pa priloznost (recemo, da mu nudi opcijskost), da opcijo izvrsi v primeru, ce cena financnega instrumenta na trgu pade. Za nakupno opcijo recemo, da je:
-  
-  * **in the money** - kadar je cena financnega instrumenta pod izvrsilno ceno,
-* **at the money** - kadar sta cena financnega instrumenta in izvrsilna cena enaki,
-* **put of the money** - kadar je cena financnega instumenta nad izvrsilno ceno.
-
-Enako kot pri nakupu evropske nakupne opcije lahko opazimo, da ima kupec evropske prodajne opcije **neomejen dobicek** in na drugi strani  **izgubo omejeno s placano premijo**. Drugace povedano, najvec kar lahko kupec izgubi je premija, ki jo placa za nakup opcije v primeru, da opcije ne izvrsi. 
-Formula za vrednotenje izplacil opcije ob casu t: 
-  $$ V_t = max(K-S_t,0) = (K-S_t)^+ $$
-  
-  <br>
-  
-  
-  <h4> 3. PRODAJA EVROPSKE NAKUPNE OPCIJE </h4>
-  
-Zdaj se postavimo v vlogo izdajatelja opcije. S tem ko **opcijo prodamo**, zanjo **prejmemo premijo** in se zavezemo k izplacilu v primeru, da kupec opcijo ob dospelosti izvrsi. Torej je v tem primeru **dobicek navzgor omejen s prejeto premijo** in **izguba navzdol neomejena** v primeru, da cena financnega instrumenta na trgu naraste. 
-
-Formula za vrednotenje izplacil opcije ob casu t: 
-  $$ V_t = min(K-S_t,0) - max(S_t-K,0) = (K-S_t)^- - (S_t - K)^+ $$
-  
-  <br>
-  
-  <h4> 4. PRODAJA EVROPSKE PRODAJNE OPCIJE </h4>
-  
-Zadnji scenarij pa je prodaja evropske prodajne opcije. Kot izdajatelj prodajne opcije, **opcijo prodamo**, zanjo **prejmemo premijo** in se zavezemo k izplacilu v primeru, da lastnik opcijo ob dospelosti izvrsi. Ponovno je **izguba navzdol neomejena**, medtem ko je **dobicek navzgor omejen s prejeto premijo**.
-
-Formula za vrednotenje izplacil opcije ob casu t: 
-  $$ V_t = min(S_t-K,0) = (S_t-K)^-  $$
-  
-  
-  Poglejmo si izplacila vseh stirih opcij na spodnji sliki. 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
 # VALUE OF EU PUT OPTION
 putV <- function(S,K) pmax(0,K-S)
@@ -113,7 +64,7 @@ callV <- function(S,K) pmin(0,K-S) - pmax(0,S-K)
 callsellPayoff <- function(S,K,premium) pmin(0,K-S) - pmax(0,S-K) + abs(premium)
 ```
 
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide', out.height='120%'}
 par(mfrow = c(2,2))
 
 x <- seq(from = 0, to = 40, by = 0.05)
@@ -135,13 +86,11 @@ plot(x,putsellPayoff(x,K,premija), type="l",lwd = 2, xlab = "Cena opcije", ylab 
 abline(h = premija, lty= 'dashed')
 ```
 
-
-
 <h3> 2. PRISTOP K RESEVANJU PROBLEMA </h3>
   
-Resevanja problema se najbolj enostavno lotimo tako, da najprej prebrane vhodne podatke graficno upodobimo. V nekaterih primerih bo ze iz zacetne slike jasno, katero izmed stirih situacij bomo uporabili za aproksimacijo. 
+Resevanja problema se je najbolj smiselno lotiti na nacin, da vhodne podatke graficno upodobimo. V nekaterih primerih bo ze iz zacetne slike jasno, katero izmed stirih situacij bomo uporabili za aproksimacijo. 
 
-En izmed ocitnih primerov, je podan na spodnjem grafu.
+Primer 'jasne zacetne slike' je prikazan na spodnjem grafu.
 
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
@@ -152,24 +101,23 @@ df
 
 price <- as.numeric(gsub(",", ".", df$Price))
 profit <- as.numeric(gsub(",", ".", df$Profit))
-profit <- profit/1000
 ```
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
 #plot data: PRICE vs PROFIT
 plot(x = price,
      y = profit,
-     xlab = "Cena (v eur)",
-     ylab = "Profit (v 1000 eur)",
+     xlab = "Cena (v EUR/MWh)",
+     ylab = "Profit (v EUR)",
      main = "Nakup EU prodajne opcije",
      pch = 20, cex=1.5)
 abline(h = 0, lty='dashed')
 ```
 
-Iz slike je jasno razvidno, da gre za **nakup evropske prodajne opcije**. 
+Hitro razberemo, da gre za **nakup evropske prodajne opcije**. 
 Preostane nam le se dolocitev parametrov. Dolociti moramo izvrsilno ceno ($K$), kolicino ($Q$) in premijo (*premium*). Kako to najlazje storimo?
   
-Ocitno je, da so vsi stirje tipi opcij sestavljeni iz dveh premic. Ena izmed premic je vselej vzporedna x osi, druga pa ima bodisi pozitiven bodisi negativen naklon. Ideja je, da **vsako vhodno transakcijo aproksimiramo s kombinacijo teh dveh premic**. Na ta nacin ugotovimo za katero vrsto opcije in tip pozicije gre. Nadaljno lahko iz naklona in zacetne vrednosti izbranih optimalnih premic, dolocimo iskane parametre. 
+Ocitno je, da so vsi stirje tipi opcij sestavljeni iz dveh premic. Ena izmed premic je vselej vzporedna x osi, druga pa ima bodisi pozitiven bodisi negativen naklon. Ideja je, da **vsako vhodno transakcijo aproksimiramo s kombinacijo teh dveh premic**. S tem, ko dolocimo ustrezno kombinacijo premic, ugotovimo, za katero vrsto opcije in tip pozicije gre. Nadaljno lahko iz smernega koeficienta in zacetne vrednosti izbranih optimalnih premic, dolocimo iskane parametre. 
 
 Premica, ki bo vselej vodoravna doloca premijo (*opomba: premija je lahko negativna ali pozitivna*): 
 $$ y = 	premija $$
@@ -182,20 +130,19 @@ Iz presecisca zgornjih dveh premic dobimo izvrsilno ceno (K):
   
   $$ K = \frac{premija - n}{kolicina} $$
   
-Zdaj iz vsega opisanega sestavimo algoritem, ki bo izracunal iskane parametre in odgovoril na vprasanje za kateri tip in pozicijo v opciji gre. 
-
+Koncno iz vsega opisanega sestavimo algoritem, ki bo izracunal iskane parametre in odgovoril na vprasanje za kateri tip in pozicijo v opciji gre. 
 
 
 
 <h3> 3. ALGORITEM </h3>
 
-Algoritem sprejme csv datoteko sestavljeno iz dveh stolpcev. V prvem stolpcu najdemo ceno financnega instrumenta in v drugem stolpcu najdemo profit pri dani ceni. Algoritem podatke prebere in odloci, za kaksno vrsto opcije gre. To stori na naslednji nacin:
+Algoritem sprejme csv datoteko sestavljeno iz dveh stolpcev. V prvem stolpcu najdemo ceno financnega instrumenta izrazeno v EUR/MWh in v drugem stolpcu najdemo profit pri dani ceni, izrazen v EUR. Algoritem podatke prebere in takoj doloci, za kaksno vrsto opcije gre. To stori na naslednji nacin:
   
   1. Algoritem **izracuna korelacijo** med podatki in s tem izbiro med stirimi moznostmi prevede na izbiro med spodnjima dvema:
   
-* Ce je **korelacija negativna**, takoj vemo, da gre za nakup prodajne opcije ali za prodajo nakupne opcije. 
+* Ce je **korelacija negativna**, takoj vemo, da gre za *nakup prodajne opcije* ali za *prodajo nakupne opcije*. 
 
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide', out.height= '50%', out.width='60%'}
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide', out.height= '50%'}
 par(mfrow = c(1,2))
 
 x <- seq(from = 0, to = 40, by = 0.05)
@@ -213,9 +160,9 @@ abline(h = premija, lty= 'dashed', col='blue')
 abline(h = 0, lty= 'dashed')
 ```
 
-* Ce je **korelacija pozitivna**, pa nam preostaneta ali prodaja prodajne opcije ali pa nakup nakupne opcije. 
+* Ce je **korelacija pozitivna**, pa nam preostaneta ali *prodaja prodajne opcije* ali pa *nakup nakupne opcije*. 
 
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide', out.height = '50%',out.width='60%'}
+```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide', out.height = '50%'}
 par(mfrow = c(1,2))
 
 x <- seq(from = 0, to = 40, by = 0.05)
@@ -233,11 +180,13 @@ abline(h = 0, lty= 'dashed')
 ```
 
 2. Na drugem koraku izbiramo le se med dvema moznostima. Odlocitev ali gre za nakupno ali prodajno opcijo sprejmemo na podlagi velikosti napake, ki se pojavi pri aproksimaciji z eno ali z drugo kombinacijo premic. Izbiramo torej med kombinacijama:
+
 * prva premica bo vodoravna in druga z nenicelnim naklonom ali
 * prva premica bo imela nenicelni naklon in druga bo vodoravna.
+
 Z enostavno primerjavo napak smo nasli ustrezno obliko za aproksimacijo. 
 
-Prisli smo do jedra algoritma v katerem **iscemo optimalno prileganje izbrane opcije na dane podatke**. Potrebno bo iskati najboljse prileganje obeh omenjenih premic. Premico z nenicelnim naklonom dobimo s pomocjo linearne regresije, medtem ko vodoravno premico dolocimo preko povprecnih profitov v "vodoravnem delu podatkov".
+Prisli smo do jedra algoritma v katerem **iscemo optimalno prileganje izbrane opcije na dane podatke**. Potrebno bo iskati najboljse prileganje obeh omenjenih premic. Premico z nenicelnim naklonom dobimo s pomocjo **linearne regresije**, medtem ko vodoravno premico dolocimo preko **povprecja profitov** v "vodoravnem delu podatkov".
 
 
 Opisani algoritem nam vrne:
@@ -296,9 +245,10 @@ opt_fit <- function(price, profit){
       najboljsi_K
       #points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
       
-      strike_price = price[najboljsi_K]
-      premija = profit[najboljsi_K]
-      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      strike_price = round(price[najboljsi_K],3)
+      premija = abs(round(profit[najboljsi_K],3))
+      kolicina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolicino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
       print(komentar)
       
     }
@@ -338,9 +288,10 @@ opt_fit <- function(price, profit){
       najboljsi_K
       #points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
       
-      strike_price = price[najboljsi_K]
-      premija = profit[najboljsi_K]
-      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      strike_price = round(price[najboljsi_K],3)
+      premija = abs(round(profit[najboljsi_K],3))
+      kolicina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolicino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
       print(komentar)
     }
   }
@@ -400,9 +351,10 @@ opt_fit <- function(price, profit){
       najboljsi_K
       #points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
       
-      strike_price = price[najboljsi_K]
-      premija = profit[najboljsi_K]
-      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      strike_price = round(price[najboljsi_K],3)
+      premija = abs(round(profit[najboljsi_K],3))
+      kolicina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolicino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
       print(komentar)
       
     }
@@ -443,10 +395,20 @@ opt_fit <- function(price, profit){
       abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue', lwd=2)
       #points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
       
-      strike_price = price[najboljsi_K]
-      premija = profit[najboljsi_K]
-      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      
+      strike_price = round(price[najboljsi_K],3)
+      premija = abs(round(profit[najboljsi_K],3))
+      kolicina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolicino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
       print(komentar)
+      # 
+      # rezultati <- data.frame(
+      #   a <- c('strike price', 'kolicina', 'premija'),
+      #   priblizki <- c(strike_price, kolicina, premija),
+      #   stringsAsFactors = FALSE
+      # )
+      # colnames(rezultati) <- c('0','priblizki')
+      # print(rezultati)
       
     }
   }
@@ -462,15 +424,13 @@ if (df$Price[2] > df$Price[3]){
 df
 price <- as.numeric(gsub(",", ".", df$Price))
 profit <- as.numeric(gsub(",", ".", df$Profit))
-profit <- profit / 1000
-
 ```
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
 #narisi graf
 plot(x = price,
      y = profit,
-     xlab = "Cena (v eur)",
-     ylab = "Profit (v tisoc eur)",
+     xlab = "Cena (v EUR/MWh)",
+     ylab = "Profit (v EUR)",
      main = "Nakup put opcije",
      pch = 20, cex=1.5)
 abline(h = 0, lty='dashed') #meja med poz in neg profiti
@@ -478,95 +438,15 @@ abline(h = 0, lty='dashed') #meja med poz in neg profiti
 opt_fit(price,profit)
 ```
 
-
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center", results='hide'}
-#1. podatki, nakup prodajne opcije
-dfA <- read.csv("Naloga_A.csv", sep=';', header = TRUE, stringsAsFactors=FALSE)
-colnames(dfA) <- c('Price','Profit')
-dfA[order(dfA$Price),]
-price <- as.numeric(gsub(",", ".", dfA$Price))
-profit <- as.numeric(gsub(",", ".", dfA$Profit))
-profit <- profit / 1000
-```
-
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
-#narisi graf
-plot(x = price,
-     y = profit,
-     xlab = "Cena (v eur)",
-     ylab = "Profit (v tisoc eur)",
-     main = "Nakup call opcije",
-     pch = 20, cex=1.5)
-abline(h = 0, lty='dashed')
-
-opt_fit(price,profit)
-```
-
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
-#3. podatki, nakup prodajne opcije
-dfB <- read.csv("Naloga_B.csv", sep=';', header = TRUE, stringsAsFactors=FALSE)
-colnames(dfB) <- c('Price','Profit')
-
-price <- as.numeric(gsub(",", ".", dfB$Price))
-profit <- as.numeric(gsub(",", ".", dfB$Profit))
-
-dfB <- data.frame(price,profit)
-dfB <- dfB[order(dfB$price, decreasing = FALSE),]
-
-price <- dfB$price
-profit <- dfB$profit
-profit <- profit/1000
-
-```
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align = 'center'}
-#narisi graf
-plot(x = price,
-     y = profit,
-     xlab = "Cena (v eur)",
-     ylab = "Profit (v tisoc eur)",
-     main = "Prodaja call opcije",
-     pch = 20, cex=1.5)
-abline(h = 0, lty='dashed')
-
-opt_fit(price,profit)
-```
-
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align = 'center',results='hide'}
-#4.. podatki, nakup prodajne opcije
-dfC <- read.csv("Naloga_C.csv", sep=';', header = TRUE, stringsAsFactors=FALSE)
-colnames(dfC) <- c('Price','Profit')
-
-price <- as.numeric(gsub(",", ".", dfC$Price))
-profit <- as.numeric(gsub(",", ".", dfC$Profit))
-
-dfC <- data.frame(price,profit)
-dfC <- dfC[order(dfC$price,decreasing = FALSE),]
-
-price <- dfC$price
-profit <- dfC$profit
-profit <- profit / 1000
-```
-
-```{r, echo=FALSE, eval=TRUE, results="markup", fig.align = 'center'}
-#narisi graf
-plot(x = price,
-     y = profit,
-     xlab = "Cena (v eur)",
-     ylab = "Profit (v tisoc eur)",
-     main = "Nakup call opcije",
-     pch = 20, cex=1.5)
-abline(h = 0, lty='dashed')
-
-opt_fit(price,profit)
-
-```
+<br>
 
 <h3> 4. UGOTOVITVE IN NADALJNE DELO </h3>
 
-Ocitno je, da linearno regresijo vsaj na videz ni najboljsa resitev, ko iscemo optimalni fit. Trenutno delam na izboljsanju aproksimacije razprsenega dela podatkov in iscem alternative za linearno regresijo. 
+Ocitno je, da linearna regresija vsaj na videz ni najboljsa resitev, ko iscemo optimalni fit. Trenutno delam na izboljsanju aproksimacije razprsenega dela podatkov. V koncnem porocilu bom predstavila aproksimacije tudi na drugih podatkih.
 
-Ko bom z aproksimacijo povsem zadovoljna sem razmisljala o vzpostavitvi shiny aplikacije, ki bi sprejela csv datoteko, narisala graf in vrnila EU vanilla opcijo, ki smo jo iskali. O se bolj zanimivih funkcijah aplikacije bom razmisljala se kasneje, ko bo glavni del naloge opravljen. 
+Ko bom z aproksimacijo povsem zadovoljna sem razmisljala o vzpostavitvi shiny aplikacije, ki bi sprejela csv datoteko, narisala graf in vrnila parametre iskane EU vanilla opcije. O se bolj zanimivih funkcijah aplikacije bom bolj razmisljala kasneje, ko bo glavni del naloge opravljen. 
 
+<br>
 
 <h3> 5. KODA </h3>
 ```{r, fig.align="center"}
@@ -624,8 +504,8 @@ opt_fit <- function(price, profit){
       najboljsi_K
       #points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
       
-      strike_price = price[najboljsi_K]
-      premija = profit[najboljsi_K]
+      strike_price = round(price[najboljsi_K],3)
+      premija = round(profit[najboljsi_K],3)
       komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
       print(komentar)
       
@@ -666,8 +546,8 @@ opt_fit <- function(price, profit){
       najboljsi_K
       #points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
       
-      strike_price = price[najboljsi_K]
-      premija = profit[najboljsi_K]
+      strike_price = round(price[najboljsi_K],3)
+      premija = round(profit[najboljsi_K],3)
       komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
       print(komentar)
     }
@@ -728,8 +608,8 @@ opt_fit <- function(price, profit){
       najboljsi_K
       #points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
       
-      strike_price = price[najboljsi_K]
-      premija = profit[najboljsi_K]
+      strike_price = round(price[najboljsi_K],3)
+      premija = round(profit[najboljsi_K],3)
       komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
       print(komentar)
       
@@ -771,8 +651,8 @@ opt_fit <- function(price, profit){
       abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue', lwd=2)
       #points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
       
-      strike_price = price[najboljsi_K]
-      premija = profit[najboljsi_K]
+      strike_price = round(price[najboljsi_K],3)
+      premija = round(profit[najboljsi_K],3)
       komentar <- paste("Priblizek za izvrsilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
       print(komentar)
       
