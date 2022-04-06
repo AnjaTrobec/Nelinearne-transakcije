@@ -95,7 +95,7 @@ Primer 'jasne zacetne slike' je prikazan na spodnjem grafu.
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
 # read data
-df <- read.csv("podatki.csv", sep=';', header = FALSE, stringsAsFactors=FALSE)
+df <- read.csv("C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterij/matematika z racunalnikom/Nelinearne-transakcije/projekt/podatki/podatki.csv", sep=';', header = FALSE, stringsAsFactors=FALSE)
 colnames(df) <- c('Price','Profit')
 df
 
@@ -417,7 +417,7 @@ opt_fit <- function(price, profit){
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
 #1. podatki, nakup prodajne opcije
-df <- read.csv("podatki.csv", sep=';', header = FALSE, stringsAsFactors=FALSE)
+df <- read.csv("C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterij/matematika z racunalnikom/Nelinearne-transakcije/projekt/podatki/podatki.csv", sep=';', header = FALSE, stringsAsFactors=FALSE)
 colnames(df) <- c('Price','Profit')
 if (df$Price[2] > df$Price[3]){
   df <- df[order(df$Price),]} #podatke uredim po cene padajoce
