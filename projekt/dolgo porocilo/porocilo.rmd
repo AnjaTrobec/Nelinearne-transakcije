@@ -1,6 +1,6 @@
 ---
 title: "GEN-I: Nelinearne transakcije"
-subtitle: "Poroèilo"
+subtitle: "PoroÄilo"
 author: "Anja Trobec"
 date: "April 2022"
 output:
@@ -20,58 +20,58 @@ library(extrafont)
 
 <center> <h2> NAVODILA ZA IZDELAVO PROJEKTA </h2> </center>
   
-  Imamo meseèno nelinearno transakcijo za elektrièno energijo, kjer se lahko znotraj doloèenih omejitev za vsako uro znotraj meseca dobave lastnik opcijskosti odloèi, koliko el. energije bo prevzeli/dobavil. Ovrednotimo jo napram mnoici cenovnih scenarijev, tako da za vsak cenovni scenarij dobimo njen profit. Cenovni scenariji so mone prihodnje cene dobave, oblikovani tako, da ustrezno popišejo verjetnostno porazdelitev prihodnje cene v smislu njene srednje vrednosti in standardne deviacije (volatilnosit). Za to transakcijo elimo poiskati njen ekvivalent standardne Evropske opcije. Kakšni so parametri ekvivalenta te opcije, kot kolièina, cena (strike), stran (nakup/prodaja) in tip (call/put) opcije?
+  Imamo meseÄno nelinearno transakcijo za elektriÄno energijo, kjer se lahko znotraj doloÄenih omejitev za vsako uro znotraj meseca dobave lastnik opcijskosti odloÄi, koliko el. energije bo prevzeli/dobavil. Ovrednotimo jo napram mnoÅ¾ici cenovnih scenarijev, tako da za vsak cenovni scenarij dobimo njen profit. Cenovni scenariji so moÅ¾ne prihodnje cene dobave, oblikovani tako, da ustrezno popiÅ¡ejo verjetnostno porazdelitev prihodnje cene v smislu njene srednje vrednosti in standardne deviacije (volatilnosit). Za to transakcijo Å¾elimo poiskati njen ekvivalent standardne Evropske opcije. KakÅ¡ni so parametri ekvivalenta te opcije, kot koliÄina, cena (strike), stran (nakup/prodaja) in tip (call/put) opcije?
   
   <center> <h2> PROJEKT </h2> </center>
   
-  <h3> 1. TEORETIÈNI UVOD </h3>
+  <h3> 1. TEORETIÄŒNI UVOD </h3>
   
-Moja naloga je poiskati Evropsko opcijo, ki najboljše opiše nelinearno transakcijo predstavljeno v podatkih. Vhodni podatki so pari, v katerih prva komponenta predstavlja ceno (*$S_t$* - *cena ob èasu t*) in druga komponenta izplaèilo pri dani ceni (*$V_t$* - *vrednost opcije v èasu t*). Cena je izrazena v EUR/MWh, izplaèilo pa v EUR.
+Moja naloga je poiskati Evropsko opcijo, ki najboljÅ¡e opiÅ¡e nelinearno transakcijo predstavljeno v podatkih. Vhodni podatki so pari, v katerih prva komponenta predstavlja ceno (*$S_t$* - *cena ob Äasu t*) in druga komponenta izplaÄilo pri dani ceni (*$V_t$* - *vrednost opcije v Äasu t*). Cena je izrazena v EUR/MWh, izplaÄilo pa v EUR.
   
   $$(S_t,V_t) $$
 
-Iskani Evropski opciji, ki bo ekvivalentna transakciji, je potrebno doloèiti najslednje parametre:
+Iskani Evropski opciji, ki bo ekvivalentna transakciji, je potrebno doloÄiti najslednje parametre:
   
-* izvršilno cena ($K$, *angl. strike price*), 
-* kolièino ($Q$) in 
-* plaèano ali prejeto premijo (*angl. option premium*).
+* izvrÅ¡ilno cena ($K$, *angl. strike price*), 
+* koliÄino ($Q$) in 
+* plaÄano ali prejeto premijo (*angl. option premium*).
 
-Doloèiti je potrebno tudi **tip opcije**. Lahko gre za:
+DoloÄiti je potrebno tudi **tip opcije**. Lahko gre za:
   
 * **call opcijo** (*angl. call option*) ali 
 * **put opcijo** (*angl. put option*). 
 
-Znotraj obeh tipov opcij, loèimo še dve poziciji, kateri lahko zavzamemo. Lahko smo v vlogi izdajatelja opcije (*angl. option writer*) in v tem primeru **opcijo prodamo** ali pa **opcijo kupimo** in s tem postanemo lastnik opcije (*angl. option buyer*).
+Znotraj obeh tipov opcij, loÄimo Å¡e dve poziciji, kateri lahko zavzamemo. Lahko smo v vlogi izdajatelja opcije (*angl. option writer*) in v tem primeru **opcijo prodamo** ali pa **opcijo kupimo** in s tem postanemo lastnik opcije (*angl. option buyer*).
 
-To nas pripelje do štirih razliènih situacij, med katerimi išèemo tisto, ki najbolje opiše dano transakcijo. Podrobneje si oglejmo vsako izmed monih izbir.
+To nas pripelje do Å¡tirih razliÄnih situacij, med katerimi iÅ¡Äemo tisto, ki najbolje opiÅ¡e dano transakcijo. Podrobneje si oglejmo vsako izmed moÅ¾nih izbir.
 
 <br>
   
   <h4> 1. NAKUP EVROPSKE CALL OPCIJE </h4>
   
- **Call opcija** podeljuje **lastniku (kupcu opcije)** pravico za nakup doloèenega finanènega inštrumenta (*angl. underlying asset*) po vnaprej doloèeni izvršilni ceni na dolocen dan (kadar govorimo o Evropski opciji) ali do doloèenega dne (kadar imamo opravka z Ameriško opcijo). Lastniku call opcija ne predstavlja obveznosti, paè pa prilonost (reèemo, da mu nudi opcijskost), da opcijo izvrši v primeru, èe cena finanènega inštrumenta na trgu naraste. Za call opcijo reèemo, da je:
+ **Call opcija** podeljuje **lastniku (kupcu opcije)** pravico za nakup doloÄenega finanÄnega inÅ¡trumenta (*angl. underlying asset*) po vnaprej doloÄeni izvrÅ¡ilni ceni na dolocen dan (kadar govorimo o Evropski opciji) ali do doloÄenega dne (kadar imamo opravka z AmeriÅ¡ko opcijo). Lastniku call opcija ne predstavlja obveznosti, paÄ pa priloÅ¾nost (reÄemo, da mu nudi opcijskost), da opcijo izvrÅ¡i v primeru, Äe cena finanÄnega inÅ¡trumenta na trgu naraste. Za call opcijo reÄemo, da je:
   
-* **in the money** - kadar je cena finanènega inštrumenta nad izvršilno ceno,
-* **at the money** - kadar sta cena finanènega inštrumenta in izvršilna cena enaki,
-* **put of the money** - kadar je cena financnega instumenta pod izvršilno ceno.
+* **in the money** - kadar je cena finanÄnega inÅ¡trumenta nad izvrÅ¡ilno ceno,
+* **at the money** - kadar sta cena finanÄnega inÅ¡trumenta in izvrÅ¡ilna cena enaki,
+* **put of the money** - kadar je cena financnega instumenta pod izvrÅ¡ilno ceno.
 
-Opazimo, da ima kupec evropske call opcije  **neomejen dobièek** in na drugi strani  **izgubo omejeno s plaèano premijo**. Drugaèe povedano, najveè kar lahko kupec izgubi je premija, ki jo plaèa za nakup opcije v primeru, da opcije ne izvrši. 
+Opazimo, da ima kupec evropske call opcije  **neomejen dobiÄek** in na drugi strani  **izgubo omejeno s plaÄano premijo**. DrugaÄe povedano, najveÄ kar lahko kupec izgubi je premija, ki jo plaÄa za nakup opcije v primeru, da opcije ne izvrÅ¡i. 
 
-Formula za vrednotenje izplaèil opcije ob èasu t: 
+Formula za vrednotenje izplaÄil opcije ob Äasu t: 
   $$ V_t = max(S_t-K,0) = (S_t - K)^+ $$
   
   <br>
   
   <h4> 2. NAKUP EVROPSKE PUT OPCIJE </h4>
   
- **Put opcija** podeljuje  **lastniku (kupcu opcije) ** pravico za prodajo doloèenega finanènega inštrumenta po vnaprej doloèeni izvršilni ceni na doloèen dan ali do doloèenega dne. Lastniku call opcija ne predstavlja obveznosti, paè pa prilonost (reèemo, da mu nudi opcijskost), da opcijo izvrši v primeru, èe cena finanènega inštrumenta na trgu pade. Za call opcijo reèemo, da je:
+ **Put opcija** podeljuje  **lastniku (kupcu opcije) ** pravico za prodajo doloÄenega finanÄnega inÅ¡trumenta po vnaprej doloÄeni izvrÅ¡ilni ceni na doloÄen dan ali do doloÄenega dne. Lastniku call opcija ne predstavlja obveznosti, paÄ pa priloÅ¾nost (reÄemo, da mu nudi opcijskost), da opcijo izvrÅ¡i v primeru, Äe cena finanÄnega inÅ¡trumenta na trgu pade. Za call opcijo reÄemo, da je:
   
-* **in the money** - kadar je cena finanènega inštrumenta pod izvršilno ceno,
-* **at the money** - kadar sta cena finanènega inštrumenta in izvršilna cena enaki,
-* **put of the money** - kadar je cena financnega instumenta nad izvršilno ceno.
+* **in the money** - kadar je cena finanÄnega inÅ¡trumenta pod izvrÅ¡ilno ceno,
+* **at the money** - kadar sta cena finanÄnega inÅ¡trumenta in izvrÅ¡ilna cena enaki,
+* **put of the money** - kadar je cena financnega instumenta nad izvrÅ¡ilno ceno.
 
-Enako kot pri nakupu evropske call opcije lahko opazimo, da ima kupec evropske put opcije **neomejen dobicek** in na drugi strani  **izgubo omejeno s plaèano premijo**. Drugaèe povedano, najveè kar lahko kupec izgubi je premija, ki jo plaèa za nakup opcije v primeru, da opcije ne izvrši. 
-Formula za vrednotenje izplacil opcije ob èasu t: 
+Enako kot pri nakupu evropske call opcije lahko opazimo, da ima kupec evropske put opcije **neomejen dobicek** in na drugi strani  **izgubo omejeno s plaÄano premijo**. DrugaÄe povedano, najveÄ kar lahko kupec izgubi je premija, ki jo plaÄa za nakup opcije v primeru, da opcije ne izvrÅ¡i. 
+Formula za vrednotenje izplacil opcije ob Äasu t: 
   $$ V_t = max(K-S_t,0) = (K-S_t)^+ $$
   
   <br>
@@ -79,22 +79,22 @@ Formula za vrednotenje izplacil opcije ob èasu t:
   
   <h4> 3. PRODAJA EVROPSKE CALL OPCIJE </h4>
   
-Zdaj se postavimo v vlogo izdajatelja opcije. S tem ko **opcijo prodamo**, zanjo **prejmemo premijo** in se zaveemo k izplaèilu v primeru, da kupec opcijo ob dospelosti izvrši. Torej je v primeru prodaje call opcije **dobicek navzgor omejen s prejeto premijo** in **izguba navzdol neomejena** (do velike izgube pride, èe cena finanènega inštrumenta na trgu naraste). 
+Zdaj se postavimo v vlogo izdajatelja opcije. S tem ko **opcijo prodamo**, zanjo **prejmemo premijo** in se zaveÅ¾emo k izplaÄilu v primeru, da kupec opcijo ob dospelosti izvrÅ¡i. Torej je v primeru prodaje call opcije **dobicek navzgor omejen s prejeto premijo** in **izguba navzdol neomejena** (do velike izgube pride, Äe cena finanÄnega inÅ¡trumenta na trgu naraste). 
 
-Formula za vrednotenje izplaèil opcije ob èasu t: 
+Formula za vrednotenje izplaÄil opcije ob Äasu t: 
    $$ V_t = premija - max(S_t-K,0) = premija - (S_t - K)^+ $$
   
   <br>
   
   <h4> 4. PRODAJA EVROPSKE PUT OPCIJE </h4>
   
-Zadnji scenarij pa je prodaja evropske put opcije. Kot izdajatelj put opcije, **opcijo prodamo**, zanjo **prejmemo premijo** in se zaveemo k izplaèilu v primeru, da lastnik opcijo ob dospelosti izvrši. Ponovno je **izguba navzdol neomejena**, medtem ko je **dobièek navzgor omejen s prejeto premijo**.
+Zadnji scenarij pa je prodaja evropske put opcije. Kot izdajatelj put opcije, **opcijo prodamo**, zanjo **prejmemo premijo** in se zaveÅ¾emo k izplaÄilu v primeru, da lastnik opcijo ob dospelosti izvrÅ¡i. Ponovno je **izguba navzdol neomejena**, medtem ko je **dobiÄek navzgor omejen s prejeto premijo**.
 
-Formula za vrednotenje izplaèil opcije ob èasu t: 
+Formula za vrednotenje izplaÄil opcije ob Äasu t: 
   $$ V_t = min(S_t-K,0) = (S_t-K)^-  $$
   
   
-Za laje razumevanje opisanega, si oglejmo spodnjo sliko. Predpostavila sem naslednje parametre:
+Za laÅ¾je razumevanje opisanega, si oglejmo spodnjo sliko. Predpostavila sem naslednje parametre:
 
 * $K = 20$ 
 * premija = $5$
@@ -141,11 +141,11 @@ abline(h = premija, lty= 'dashed')
 
 
 
-<h3> 2. PRISTOP K REŠEVANJU PROBLEMA </h3>
+<h3> 2. PRISTOP K REÅ EVANJU PROBLEMA </h3>
   
-Reševanja problema se je najbolj smiselno lotiti na naèin, da vhodne podatke grafièno upodobimo. V nekaterih primerih bo e iz zaèetne slike jasno, katero izmed štirih situacij bomo uporabili za aproksimacijo. 
+ReÅ¡evanja problema se je najbolj smiselno lotiti na naÄin, da vhodne podatke grafiÄno upodobimo. V nekaterih primerih bo Å¾e iz zaÄetne slike jasno, katero izmed Å¡tirih situacij bomo uporabili za aproksimacijo. 
 
-Primer 'jasne zaèetne slike' je prikazan na spodnjem grafu.
+Primer 'jasne zaÄetne slike' je prikazan na spodnjem grafu.
 
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
@@ -170,37 +170,37 @@ abline(h = 0, lty='dashed')
 ```
 
 Hitro razberemo, da gre za **nakup evropske put opcije**. 
-Preostane nam le še doloèitev parametrov. Doloèiti moramo izvršilno ceno ($K$), kolièino ($Q$) in premijo (*premium*). Kako to najlaje storimo?
+Preostane nam le Å¡e doloÄitev parametrov. DoloÄiti moramo izvrÅ¡ilno ceno ($K$), koliÄino ($Q$) in premijo (*premium*). Kako to najlaÅ¾je storimo?
   
-Oèitno je, da so vsi štirje tipi opcij sestavljeni iz dveh premic. Ena izmed premic je vselej vzporedna x osi, druga pa ima bodisi pozitiven bodisi negativen naklon. Ideja je, da **vsako vhodno transakcijo aproksimiramo s kombinacijo teh dveh premic**. S tem, ko doloèimo ustrezno kombinacijo premic, lahko hitro ugotovimo, za katero vrsto opcije in tip pozicije gre. Nadaljno lahko iz smernega koeficienta in zaèetne vrednosti izbranih optimalnih premic, doloèimo iskane parametre. 
+OÄitno je, da so vsi Å¡tirje tipi opcij sestavljeni iz dveh premic. Ena izmed premic je vselej vzporedna x osi, druga pa ima bodisi pozitiven bodisi negativen naklon. Ideja je, da **vsako vhodno transakcijo aproksimiramo s kombinacijo teh dveh premic**. S tem, ko doloÄimo ustrezno kombinacijo premic, lahko hitro ugotovimo, za katero vrsto opcije in tip pozicije gre. Nadaljno lahko iz smernega koeficienta in zaÄetne vrednosti izbranih optimalnih premic, doloÄimo iskane parametre. 
 
-Premica, ki bo vselej vodoravna doloèa premijo:
+Premica, ki bo vselej vodoravna doloÄa premijo:
 $$ y = 	premija $$
 *Opomba*: premija je lahko negativna ali pozitivna, odvisno katero pozicijo v opciji zavzamemo.
 
 
-Premica s pozitivnim ali negativnim naklonom doloèa kolièino (Q):
+Premica s pozitivnim ali negativnim naklonom doloÄa koliÄino (Q):
   
 $$ y = 	Q * S_t + n$$
   
   
-Iz preseèišèa zgornjih dveh premic dobimo izvršilno ceno (K):
+Iz preseÄiÅ¡Äa zgornjih dveh premic dobimo izvrÅ¡ilno ceno (K):
   
   $$ K = \frac{premija - n}{Q} $$
   
 *Opomba*: predznak je odvisen od predznaka premije.  
 
-Konèno iz vsega opisanega sestavimo algoritem, ki bo izraèunal iskane parametre in odgovoril na vprasanje za kateri tip in pozicijo v opciji gre. 
+KonÄno iz vsega opisanega sestavimo algoritem, ki bo izraÄunal iskane parametre in odgovoril na vprasanje za kateri tip in pozicijo v opciji gre. 
 
 
 
 <h3> 3. ALGORITEM </h3>
 
-Algoritem sprejme csv datoteko sestavljeno iz dveh stolpcev. V prvem stolpcu najdemo ceno finanènega inštrumenta izrazeno v EUR/MWh in v drugem stolpcu najdemo izplaèilo pri dani ceni, izrazeno v EUR. Algoritem podatke prebere in najprej doloèi, za katero vrsto opcije gre. To stori na naslednji nacin:
+Algoritem sprejme csv datoteko sestavljeno iz dveh stolpcev. V prvem stolpcu najdemo ceno finanÄnega inÅ¡trumenta izrazeno v EUR/MWh in v drugem stolpcu najdemo izplaÄilo pri dani ceni, izrazeno v EUR. Algoritem podatke prebere in najprej doloÄi, za katero vrsto opcije gre. To stori na naslednji nacin:
   
-  1. Algoritem **izraèuna korelacijo** med podatki in s tem izbiro med štirimi monostmi prevede na izbiro med spodnjima dvema:
+  1. Algoritem **izraÄuna korelacijo** med podatki in s tem izbiro med Å¡tirimi moÅ¾nostmi prevede na izbiro med spodnjima dvema:
   
-* èe je **korelacija negativna**, takoj vemo, da gre za *nakup put opcije* ali za *prodajo call opcije*. 
+* Äe je **korelacija negativna**, takoj vemo, da gre za *nakup put opcije* ali za *prodajo call opcije*. 
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide', out.height= '50%'}
 par(mfrow = c(1,2))
@@ -220,7 +220,7 @@ abline(h = premija, lty= 'dashed', col='blue')
 abline(h = 0, lty= 'dashed')
 ```
 
-* èe je **korelacija pozitivna**, pa nam preostaneta ali *prodaja put opcije* ali pa *nakup call opcije*. 
+* Äe je **korelacija pozitivna**, pa nam preostaneta ali *prodaja put opcije* ali pa *nakup call opcije*. 
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide', out.height = '50%'}
 par(mfrow = c(1,2))
@@ -239,13 +239,13 @@ abline(h = premija, lty= 'dashed', col='blue')
 abline(h = 0, lty= 'dashed')
 ```
 
-2. Na drugem koraku izbiramo le še med dvema monostima. Odloèitev ali gre za nakupno ali put opcijo sprejmemo na podlagi velikosti napake, ki se pojavi pri aproksimaciji z eno ali z drugo kombinacijo premic. Izbiramo torej med kombinacijama:
+2. Na drugem koraku izbiramo le Å¡e med dvema moÅ¾nostima. OdloÄitev ali gre za nakupno ali put opcijo sprejmemo na podlagi velikosti napake, ki se pojavi pri aproksimaciji z eno ali z drugo kombinacijo premic. Izbiramo torej med kombinacijama:
 
-* graf se priène z vodoravno premico in zvezno nadaljuje v premico z nenièelnim naklonom ali
-* graf sestavlja premica z nenièelnim naklonom, ki preide v vodoravno premico.
+* graf se priÄne z vodoravno premico in zvezno nadaljuje v premico z neniÄelnim naklonom ali
+* graf sestavlja premica z neniÄelnim naklonom, ki preide v vodoravno premico.
 
-Na ta naèin z enostavno primerjavo napak poišemo ustrezno obliko za aproksimacijo. 
-Prišli smo do jedra algoritma v katerem **išèemo optimalno prileganje izbrane opcije na dane podatke**. Potrebno bo iskati najboljše prileganje obeh omenjenih premic. Premico z nenièelnim naklonom dobimo s pomoèjo **linearne regresije**, medtem ko vodoravno premico doloèimo preko **povpreèja profitov** na tistem delu podatkov, kjer opazimo stacionarnost. 
+Na ta naÄin z enostavno primerjavo napak poiÅ¡emo ustrezno obliko za aproksimacijo. 
+PriÅ¡li smo do jedra algoritma v katerem **iÅ¡Äemo optimalno prileganje izbrane opcije na dane podatke**. Potrebno bo iskati najboljÅ¡e prileganje obeh omenjenih premic. Premico z neniÄelnim naklonom dobimo s pomoÄjo **linearne regresije**, medtem ko vodoravno premico doloÄimo preko **povpreÄja profitov** na tistem delu podatkov, kjer opazimo stacionarnost. 
 
 
 Opisani algoritem nam vrne:
@@ -306,8 +306,8 @@ opt_fit <- function(price, profit){
       
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
-      kolièina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolièino ", as.character(kolièina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      koliÄina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Priblizek za izvrÅ¡ilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za koliÄino ", as.character(koliÄina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
       print(komentar)
       
     }
@@ -349,8 +349,8 @@ opt_fit <- function(price, profit){
       
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
-      kolièina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolièino ", as.character(kolièina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      koliÄina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Priblizek za izvrÅ¡ilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za koliÄino ", as.character(koliÄina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
       print(komentar)
     }
   }
@@ -412,8 +412,8 @@ opt_fit <- function(price, profit){
       
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
-      kolièina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolièino ", as.character(kolièina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      koliÄina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Priblizek za izvrÅ¡ilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za koliÄino ", as.character(koliÄina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
       print(komentar)
       
     }
@@ -457,13 +457,13 @@ opt_fit <- function(price, profit){
       
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
-      kolièina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolièino ", as.character(kolièina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      koliÄina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Priblizek za izvrÅ¡ilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za koliÄino ", as.character(koliÄina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
       print(komentar)
       # 
       # rezultati <- data.frame(
-      #   a <- c('strike price', 'kolièina', 'premija'),
-      #   priblizki <- c(strike_price, kolièina, premija),
+      #   a <- c('strike price', 'koliÄina', 'premija'),
+      #   priblizki <- c(strike_price, koliÄina, premija),
       #   stringsAsFactors = FALSE
       # )
       # colnames(rezultati) <- c('0','priblizki')
@@ -643,7 +643,7 @@ opt_fit <- function(price, profit){
       
       strike_price = round(price[najboljsi_K],3)
       premija = round(profit[najboljsi_K],3)
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      komentar <- paste("Priblizek za izvrÅ¡ilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
       print(komentar)
       
     }
@@ -685,7 +685,7 @@ opt_fit <- function(price, profit){
       
       strike_price = round(price[najboljsi_K],3)
       premija = round(profit[najboljsi_K],3)
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      komentar <- paste("Priblizek za izvrÅ¡ilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
       print(komentar)
     }
   }
@@ -747,7 +747,7 @@ opt_fit <- function(price, profit){
       
       strike_price = round(price[najboljsi_K],3)
       premija = round(profit[najboljsi_K],3)
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      komentar <- paste("Priblizek za izvrÅ¡ilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
       print(komentar)
       
     }
@@ -790,10 +790,9 @@ opt_fit <- function(price, profit){
       
       strike_price = round(price[najboljsi_K],3)
       premija = round(profit[najboljsi_K],3)
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
+      komentar <- paste("Priblizek za izvrÅ¡ilno ceno opcije je ", as.character(strike_price), ", za premijo pa ", as.character(premija), ".",sep="")
       print(komentar)
       
     }
   }
 }
-```
