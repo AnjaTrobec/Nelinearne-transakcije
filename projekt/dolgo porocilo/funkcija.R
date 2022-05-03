@@ -225,6 +225,8 @@ opt_fit <- function(price, profit){
       # colnames(rezultati) <- c('0','priblizki')
       # print(rezultati)
       
+      
     }
   }
+  return(komentar)
 }

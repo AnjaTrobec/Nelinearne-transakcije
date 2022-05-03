@@ -26,9 +26,9 @@ library(extrafont)
   
   <h3> 1. TEORETIČNI UVOD </h3>
   
-Moja naloga je poiskati Evropsko opcijo, ki najboljše opiše nelinearno transakcijo predstavljeno v podatkih. Vhodni podatki so pari, v katerih prva komponenta predstavlja ceno (*$S_t$* - *cena ob času t*) in druga komponenta izplačilo pri dani ceni (*$V_t$* - *vrednost opcije v času t*). Cena je izrazena v EUR/MWh, izplačilo pa v EUR.
+Moja naloga je poiskati Evropsko opcijo, ki najboljše opiše nelinearno transakcijo predstavljeno v podatkih. Vhodni podatki so pari, v katerih prva komponenta predstavlja ceno (*$S$* - *price*) in druga komponenta izplačilo pri dani ceni (*$V$* - *profit*). Cena je izrazena v EUR/MWh, izplačilo pa v EUR.
   
-  $$(S_t,V_t) $$
+  $$(S,V) $$
 
 Iskani Evropski opciji, ki bo ekvivalentna transakciji, je potrebno določiti najslednje parametre:
   
@@ -580,12 +580,7 @@ opt_fit(price,profit)
 
 <br>
 
-<h3> 4. KOMENTARJI </h3>
-
-
-<br>
-
-<h3> 5. KODA </h3>
+<h3> 4. KODA </h3>
 ```{r, fig.align="center"}
 opt_fit <- function(price, profit){
   if (cor(price, profit) < 0){
@@ -796,3 +791,11 @@ opt_fit <- function(price, profit){
     }
   }
 }
+```
+
+
+<h3> 5. KOMENTARJI </h3>
+
+Dobljene aproksimacije se v nekaterih primerih zdijo precej točne, v drugih nekoliko manj. Na podatkih kjer imamo več šuma je aproksimacija slabša, razlogov za to je lahko več. Eden izmed očitnih je ta, da morda linearna regresija ni najboljša rešitev za reševanje, kadar so podatki bolj razpršeni. Morda pa problem ni direktno v linearni regresiji, temveč z izbiri meje med podatki, ki jih aproksimiramo z eno in drugo premico. Morda bi bilo smiselno določiti interval zaupanja, torej kolikšna odstopanja dopuščamo in to upoštevati pri izbiri aproksimacije. 
+
+Poleg poročila sem izdelala še shiny aplikacijo, ki sprejme csv datoteko, izpiše podatke v obliki tabele, nariše graf, aplicira ustrezno aproksimacijo z evropsko opcijo in vrne iskane parametre. 

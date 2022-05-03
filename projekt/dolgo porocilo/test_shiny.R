@@ -1,17 +1,12 @@
 library(shiny)
 library(DT)
-library(ggplot2)
-
-foo <- function(komentar) {
-  message(komentar)
-}
 
 # Define UI
 ui <- shinyUI(fluidPage(
   titlePanel('Nelinearne transakcije'),
   
   sidebarPanel(
-  fileInput('target_upload', 'Naloži datoteko:',
+  fileInput('target_upload', 'Naloži csv datoteko:',
             accept = c(
               'text/csv',
               'text/comma-separated-values',
@@ -34,9 +29,7 @@ server <- shinyServer(function(input, output) {
     inFile <- input$target_upload
     if (is.null(inFile))
       return(NULL)
-    # if (ncol(inFile) != 2)
-    #   return(NULL)
-    df <- read.csv(inFile$datapath, header = input$header,sep = input$separator)
+    df <- read.csv(inFile$datapath, header = input$header, sep = input$separator)
     colnames(df) <- c('Price','Profit')
     return(df)
   })
@@ -47,35 +40,29 @@ server <- shinyServer(function(input, output) {
   })
   
   output$plot <- renderPlot({
-    source('C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterij/matematika z racunalnikom/Nelinearne-transakcije/projekt/dolgo porocilo/funkcija.R', local = TRUE)
+    source('C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterij/matematika z racunalnikom/Nelinearne-transakcije/Nelinearne-transakcije/projekt/dolgo porocilo/funkcija.R', local = TRUE)
     df <- branje_datoteke()
+    
     price <- as.numeric(gsub(",", ".", df$Price))
     profit <- as.numeric(gsub(",", ".", df$Profit))
     
     df <- data.frame(price,profit)
     df <- df[order(df$price, decreasing = FALSE),]
-    price <- df$price
-    profit <- df$profit
+    price <- as.numeric(df$price)
+    profit <- as.numeric(df$profit)
     plot(x = price,
          y = profit,
+         xlim = c(min(price)-20,max(price)+20),
+         ylim = c(min(profit)-20, max(profit)+20),
          xlab = "Cena (v EUR/MWh)",
          ylab = "Profit (v EUR)",
-         main = "Nakup call opcije",
          pch = 20, cex=1.5)
     abline(h = 0, lty='dashed')
-    
+
     opt_fit(price,profit)
 
 
   })
-  
-  # observeEvent(input$btn, {
-  #   withCallingHandlers(
-  #     opt_fit(price,profit),
-  #     foo(komentar),
-  #     message = function(komentar) output$text <- renderPrint(m$komentar)
-  #   )
-  # })
   
 }
 )
