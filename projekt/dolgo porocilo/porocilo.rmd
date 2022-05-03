@@ -4,6 +4,7 @@ subtitle: "Poročilo"
 author: "Anja Trobec"
 date: "April 2022"
 output:
+  word_document:
   html_document:
   printresults: hide
 editor_options:
