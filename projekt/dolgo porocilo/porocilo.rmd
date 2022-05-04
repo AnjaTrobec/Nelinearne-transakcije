@@ -800,3 +800,11 @@ opt_fit <- function(price, profit){
 Dobljene aproksimacije se v nekaterih primerih zdijo precej točne, v drugih nekoliko manj. Na podatkih kjer imamo več šuma je aproksimacija slabša, razlogov za to je lahko več. Eden izmed očitnih je ta, da morda linearna regresija ni najboljša rešitev za reševanje, kadar so podatki bolj razpršeni. Morda pa problem ni direktno v linearni regresiji, temveč z izbiri meje med podatki, ki jih aproksimiramo z eno in drugo premico. Morda bi bilo smiselno določiti interval zaupanja, torej kolikšna odstopanja dopuščamo in to upoštevati pri izbiri aproksimacije. 
 
 Poleg poročila sem izdelala še shiny aplikacijo, ki sprejme csv datoteko, izpiše podatke v obliki tabele, nariše graf, aplicira ustrezno aproksimacijo z evropsko opcijo in vrne iskane parametre. 
+
+<h3> 6. DODATNO VPRAŠANJE </h3>
+**Ali v realnem svetu opcijo izvršimo vedno kadar je ob zapadlosti in the money?**
+
+Ne. Pomembno je, da izplačilo primerjamo s transakcijskimi stroški, ki nastanejo pri poteku transakcije. Če je opcija *in the money* z zelo nizkim izplačilom, se najverjetneje opcije ne splača izvršiti, saj se lahko zgodi, da so transakcijski stroški višji in utrpimo nepotrebno izgubo.  
+
+
+
