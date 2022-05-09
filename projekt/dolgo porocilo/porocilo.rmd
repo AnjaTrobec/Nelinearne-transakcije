@@ -5,6 +5,7 @@ author: "Anja Trobec"
 date: "April 2022"
 output:
   word_document:
+  pdf_document: 
   html_document:
   printresults: hide
 editor_options:
@@ -50,37 +51,37 @@ To nas pripelje do štirih različnih situacij, med katerimi iščemo tisto, ki 
   
   <h4> 1. NAKUP EVROPSKE CALL OPCIJE </h4>
   
- **Call opcija** podeljuje **lastniku (kupcu opcije)** pravico za nakup določenega finančnega inštrumenta (*angl. underlying asset*) po vnaprej določeni izvršilni ceni na dolocen dan (kadar govorimo o Evropski opciji) ali do določenega dne (kadar imamo opravka z Ameriško opcijo). Lastniku call opcija ne predstavlja obveznosti, pač pa priložnost (rečemo, da mu nudi opcijskost), da opcijo izvrši v primeru, če cena finančnega inštrumenta na trgu naraste. Za call opcijo rečemo, da je:
+ **Call opcija** podeljuje **lastniku (kupcu opcije)** pravico za nakup določenega inštrumenta (*angl. underlying asset*) po vnaprej določeni izvršilni ceni na dolocen dan (kadar govorimo o Evropski opciji) ali do določenega dne (kadar imamo opravka z Ameriško opcijo). Lastniku call opcija ne predstavlja obveznosti, pač pa priložnost (rečemo, da mu nudi opcijskost), da opcijo izvrši v primeru, če cena inštrumenta na trgu naraste. Za call opcijo rečemo, da je:
   
-* **in the money** - kadar je cena finančnega inštrumenta nad izvršilno ceno,
-* **at the money** - kadar sta cena finančnega inštrumenta in izvršilna cena enaki,
-* **put of the money** - kadar je cena financnega instumenta pod izvršilno ceno.
+* **in the money** - kadar je cena inštrumenta nad izvršilno ceno,
+* **at the money** - kadar sta cena inštrumenta in izvršilna cena enaki,
+* **put of the money** - kadar je cena instumenta pod izvršilno ceno.
 
 Opazimo, da ima kupec evropske call opcije  **neomejen dobiček** in na drugi strani  **izgubo omejeno s plačano premijo**. Drugače povedano, največ kar lahko kupec izgubi je premija, ki jo plača za nakup opcije v primeru, da opcije ne izvrši. 
 
 Formula za vrednotenje izplačil opcije ob času t: 
-  $$ V_t = max(S_t-K,0) = (S_t - K)^+ $$
+  $$ V_t = max(S_t-K,0) - premija = (S_t - K)^+ - premija$$
   
   <br>
   
   <h4> 2. NAKUP EVROPSKE PUT OPCIJE </h4>
   
- **Put opcija** podeljuje  **lastniku (kupcu opcije) ** pravico za prodajo določenega finančnega inštrumenta po vnaprej določeni izvršilni ceni na določen dan ali do določenega dne. Lastniku call opcija ne predstavlja obveznosti, pač pa priložnost (rečemo, da mu nudi opcijskost), da opcijo izvrši v primeru, če cena finančnega inštrumenta na trgu pade. Za call opcijo rečemo, da je:
+ **Put opcija** podeljuje  **lastniku (kupcu opcije) ** pravico za prodajo določenega inštrumenta po vnaprej določeni izvršilni ceni na določen dan ali do določenega dne. Lastniku call opcija ne predstavlja obveznosti, pač pa priložnost (rečemo, da mu nudi opcijskost), da opcijo izvrši v primeru, če cena inštrumenta na trgu pade. Za call opcijo rečemo, da je:
   
-* **in the money** - kadar je cena finančnega inštrumenta pod izvršilno ceno,
-* **at the money** - kadar sta cena finančnega inštrumenta in izvršilna cena enaki,
-* **put of the money** - kadar je cena financnega instumenta nad izvršilno ceno.
+* **in the money** - kadar je cena inštrumenta pod izvršilno ceno,
+* **at the money** - kadar sta cena inštrumenta in izvršilna cena enaki,
+* **put of the money** - kadar je cena instumenta nad izvršilno ceno.
 
 Enako kot pri nakupu evropske call opcije lahko opazimo, da ima kupec evropske put opcije **neomejen dobicek** in na drugi strani  **izgubo omejeno s plačano premijo**. Drugače povedano, največ kar lahko kupec izgubi je premija, ki jo plača za nakup opcije v primeru, da opcije ne izvrši. 
 Formula za vrednotenje izplacil opcije ob času t: 
-  $$ V_t = max(K-S_t,0) = (K-S_t)^+ $$
+  $$ V_t = max(K-S_t,0) - premija = (K-S_t)^+ - premija$$
   
   <br>
   
   
   <h4> 3. PRODAJA EVROPSKE CALL OPCIJE </h4>
   
-Zdaj se postavimo v vlogo izdajatelja opcije. S tem ko **opcijo prodamo**, zanjo **prejmemo premijo** in se zavežemo k izplačilu v primeru, da kupec opcijo ob dospelosti izvrši. Torej je v primeru prodaje call opcije **dobicek navzgor omejen s prejeto premijo** in **izguba navzdol neomejena** (do velike izgube pride, če cena finančnega inštrumenta na trgu naraste). 
+Zdaj se postavimo v vlogo izdajatelja opcije. S tem ko **opcijo prodamo**, zanjo **prejmemo premijo** in se zavežemo k izplačilu v primeru, da kupec opcijo ob dospelosti izvrši. Torej je v primeru prodaje call opcije **dobicek navzgor omejen s prejeto premijo** in **izguba navzdol neomejena** (do velike izgube pride, če cena inštrumenta na trgu naraste). 
 
 Formula za vrednotenje izplačil opcije ob času t: 
    $$ V_t = premija - max(S_t-K,0) = premija - (S_t - K)^+ $$
@@ -92,7 +93,7 @@ Formula za vrednotenje izplačil opcije ob času t:
 Zadnji scenarij pa je prodaja evropske put opcije. Kot izdajatelj put opcije, **opcijo prodamo**, zanjo **prejmemo premijo** in se zavežemo k izplačilu v primeru, da lastnik opcijo ob dospelosti izvrši. Ponovno je **izguba navzdol neomejena**, medtem ko je **dobiček navzgor omejen s prejeto premijo**.
 
 Formula za vrednotenje izplačil opcije ob času t: 
-  $$ V_t = min(S_t-K,0) = (S_t-K)^-  $$
+  $$ V_t = premija - min(S_t-K,0) = premija - (S_t-K)^-  $$
   
   
 Za lažje razumevanje opisanega, si oglejmo spodnjo sliko. Predpostavila sem naslednje parametre:
@@ -197,7 +198,7 @@ Končno iz vsega opisanega sestavimo algoritem, ki bo izračunal iskane parametr
 
 <h3> 3. ALGORITEM </h3>
 
-Algoritem sprejme csv datoteko sestavljeno iz dveh stolpcev. V prvem stolpcu najdemo ceno finančnega inštrumenta izrazeno v EUR/MWh in v drugem stolpcu najdemo izplačilo pri dani ceni, izrazeno v EUR. Algoritem podatke prebere in najprej določi, za katero vrsto opcije gre. To stori na naslednji nacin:
+Algoritem sprejme csv datoteko sestavljeno iz dveh stolpcev. V prvem stolpcu najdemo ceno inštrumenta izrazeno v EUR/MWh in v drugem stolpcu najdemo izplačilo pri dani ceni, izrazeno v EUR. Algoritem podatke prebere in najprej določi, za katero vrsto opcije gre. To stori na naslednji nacin:
   
   1. Algoritem **izračuna korelacijo** med podatki in s tem izbiro med štirimi možnostmi prevede na izbiro med spodnjima dvema:
   
@@ -333,7 +334,7 @@ opt_fit <- function(price, profit){
         odstopanje1[K] <- sum(napaka1)
         
         
-        #POsEVNA PREMICA
+        #POŠEVNA PREMICA
         premica2 <- lm(profit[(round(length(price)/2,0)+K):length(price)] ~ price[(round(length(price)/2,0)+K):length(price)])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]
@@ -395,7 +396,7 @@ opt_fit <- function(price, profit){
         odstopanje1[K] <- sum(napaka1)
         
         
-        #POsEVNA PREMICA
+        #POŠEVNA PREMICA
         premica2 <- lm(profit[1:K] ~ price[1:K])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]
@@ -440,7 +441,7 @@ opt_fit <- function(price, profit){
         odstopanje1[K] <- sum(napaka1)
         
         
-        #POsEVNA PREMICA
+        #POŠEVNA PREMICA
         premica2 <- lm(profit[(round(length(price)/2,0)+K):length(price)] ~ price[(round(length(price)/2,0)+K):length(price)])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]
@@ -797,14 +798,11 @@ opt_fit <- function(price, profit){
 
 <h3> 5. KOMENTARJI </h3>
 
-Dobljene aproksimacije se v nekaterih primerih zdijo precej točne, v drugih nekoliko manj. Na podatkih kjer imamo več šuma je aproksimacija slabša, razlogov za to je lahko več. Eden izmed očitnih je ta, da morda linearna regresija ni najboljša rešitev za reševanje, kadar so podatki bolj razpršeni. Morda pa problem ni direktno v linearni regresiji, temveč z izbiri meje med podatki, ki jih aproksimiramo z eno in drugo premico. Morda bi bilo smiselno določiti interval zaupanja, torej kolikšna odstopanja dopuščamo in to upoštevati pri izbiri aproksimacije. 
+Algoritem prepozna tip opcije ter pozicijo, nariše ustrezno aproksimacijo in vrne iskane parametre. Dobljene aproksimacije se v nekaterih primerih zdijo precej točne, v drugih nekoliko manj. Na podatkih kjer imamo več šuma, je aproksimacija (vsaj na videz) nekoliko slabša, kar je pričakovano. Kar se tiče nadgradnje algoritma, bi bilo morda smiselno določiti interval zaupanja, torej kolikšna odstopanja dopuščamo in to upoštevati pri izbiri aproksimacije. 
 
-Poleg poročila sem izdelala še shiny aplikacijo, ki sprejme csv datoteko, izpiše podatke v obliki tabele, nariše graf, aplicira ustrezno aproksimacijo z evropsko opcijo in vrne iskane parametre. 
+Poleg poročila sem izdelala še shiny aplikacijo, ki sprejme csv datoteko, izpiše podatke v obliki tabele, nariše graf, aplicira ustrezno aproksimacijo z evropsko opcijo in vrne iskane parametre. Aplikacija je dostopna na git repozitoriju. 
 
-<h3> 6. DODATNO VPRAŠANJE </h3>
-**Ali v realnem svetu opcijo izvršimo vedno kadar je ob zapadlosti in the money?**
-
-Ne. Pomembno je, da izplačilo primerjamo s transakcijskimi stroški, ki nastanejo pri poteku transakcije. Če je opcija *in the money* z zelo nizkim izplačilom, se najverjetneje opcije ne splača izvršiti, saj se lahko zgodi, da so transakcijski stroški višji in utrpimo nepotrebno izgubo.  
+Za konec, sva razrešila še vprašanje: *Ali se opcijo, kadar je ta 'in the money', vedno splača izvršiti?* Odgovor na vprašanje bi bil **ne**. V primerih, ko je tržna cena le malenkost nad *strike price*, se lahko zgodi, da ob izvršitvi utrpimo izgubo. Razlog za to je v razliki med ponujeno in zahtevano ceno pri izvedeni transakciji.   
 
 
 

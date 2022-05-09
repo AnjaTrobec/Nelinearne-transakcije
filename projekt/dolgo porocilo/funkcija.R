@@ -1,8 +1,8 @@
 opt_fit <- function(price, profit){
   if (cor(price, profit) < 0){
     #nakup put opcije (3) ali prodaja call opcije (2)
-    
     #pogledamo napake odstopanj in odlocimo ali gre za put ali call
+    
     meja <- length(price)/4
     povpr1 <- mean(profit[1:meja])
     er1 <- 0
@@ -16,15 +16,13 @@ opt_fit <- function(price, profit){
     
     #1. NAKUP PUT OPCIJE__________________________________________________________
     if (er1 > er2){
-      komentar <- paste("Gre za nakup put opcije.")
-      print(komentar)
+      tip_opcije <- paste("Gre za nakup put opcije.")
+      #print(tip_opcije)
       
       odstopanje1 <- rep(0,length(price)) #odstopanje pri aproksimaciji z vodoravno premico
       odstopanje2 <- rep(0,length(price)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
       najboljsi_K = 0
       
-      
-      #GLAVNA ZANKA
       for (K in 1:length(price)){
         #VODORAVNA PREMICA
         premica1 <- profit[K]
@@ -63,16 +61,16 @@ opt_fit <- function(price, profit){
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
       kolicina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolicino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
-      print(komentar)
+      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      #print(komentar)
       
     }
     
     #PRODAJA CALL OPCIJE__________________________________________________________
     
     if (er2 > er1){
-      komentar <- paste("Gre za prodajo call opcije.")
-      print(komentar)
+      tip_opcije <- paste("Gre za prodajo call opcije.")
+      #print(tip_opcije)
       
       odstopanje1 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z vodoravno premico
       odstopanje2 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
@@ -88,7 +86,7 @@ opt_fit <- function(price, profit){
         odstopanje1[K] <- sum(napaka1)
         
         
-        #POsEVNA PREMICA
+        #POŠEVNA PREMICA
         premica2 <- lm(profit[(round(length(price)/2,0)+K):length(price)] ~ price[(round(length(price)/2,0)+K):length(price)])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]
@@ -106,8 +104,8 @@ opt_fit <- function(price, profit){
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
       kolicina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolicino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
-      print(komentar)
+      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      #print(komentar)
     }
   }
   
@@ -130,8 +128,8 @@ opt_fit <- function(price, profit){
     
     #PRODAJA PUT OPCIJE__________________________________________________________
     if (er1 > er2){
-      komentar <- paste("Gre za prodajo put opcije.")
-      print(komentar)
+      tip_opcije <- paste("Gre za prodajo put opcije.")
+      #print(tip_opcije)
       
       #poiscimo optimalni fit
       odstopanje1 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z vodoravno premico
@@ -150,7 +148,7 @@ opt_fit <- function(price, profit){
         odstopanje1[K] <- sum(napaka1)
         
         
-        #POsEVNA PREMICA
+        #POŠEVNA PREMICA
         premica2 <- lm(profit[1:K] ~ price[1:K])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]
@@ -169,15 +167,15 @@ opt_fit <- function(price, profit){
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
       kolicina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolicino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
-      print(komentar)
+      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      #print(komentar)
       
     }
     
     #NAKUP CALL OPCIJE__________________________________________________________
     if (er2 > er1){
-      komentar <- paste("Gre za nakup call opcije.")
-      print(komentar)
+      tip_opcije <- paste("Gre za nakup call opcije.")
+      #print(tip_opcije)
       
       odstopanje1 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z vodoravno premico
       odstopanje2 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
@@ -214,19 +212,11 @@ opt_fit <- function(price, profit){
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
       kolicina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Priblizek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za kolicino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
-      print(komentar)
-      # 
-      # rezultati <- data.frame(
-      #   a <- c('strike price', 'kolicina', 'premija'),
-      #   priblizki <- c(strike_price, kolicina, premija),
-      #   stringsAsFactors = FALSE
-      # )
-      # colnames(rezultati) <- c('0','priblizki')
-      # print(rezultati)
-      
-      
+      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      #print(komentar)
     }
   }
-  return(komentar)
+  output <- list(tip=tip_opcije, parametri=komentar)
+  return(output)
 }
+
