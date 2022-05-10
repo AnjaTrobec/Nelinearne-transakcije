@@ -6,13 +6,16 @@ source('C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterij/matematika z racunalnik
 
 # Define UI
 ui <- shinyUI(fluidPage(
-  
-  theme = bs_theme(version = 4, bootswatch = "minty"),
                 
-  titlePanel(title = 'Nelinearne transakcije'),
+  titlePanel(title = 'PROJEKT'),
   
+  navbarPage(title = "Nelinearne transakcije", 
+             theme = bs_theme(version = 4, bootswatch = "minty")
+             # <add tabPanels etc. from here on>)
+             ),
   
   sidebarLayout(
+    sidebarPanel(
   fileInput('target_upload', 'Naloži csv datoteko:',
             accept = c(
               'text/csv',
@@ -24,8 +27,10 @@ ui <- shinyUI(fluidPage(
   DT::dataTableOutput("sample_table")),
   
   mainPanel(plotOutput("plot", width = "800px", height = '600px'),
-           actionButton("btn","Pokaži parametre"),
-           textOutput("text"))
+            actionButton("opcija", "Nariši opcijo"),
+            actionButton("parametri", "Pokaži parametre"),
+            verbatimTextOutput("text"),
+            plotOutput("plot2", width = "800px", height = '600px')))
 ))
 
 # Define server logic
@@ -40,47 +45,56 @@ server <- shinyServer(function(input, output) {
     return(df)
   })
   
-  
-  
-  output$sample_table<- DT::renderDataTable({
+  output$sample_table <- DT::renderDataTable({
     df <- branje_datoteke()
     DT::datatable(df)
   })
   
-  output$plot <- renderPlot({
+  data <- reactive({
     df <- branje_datoteke()
-    
     price <- as.numeric(gsub(",", ".", df$Price))
     profit <- as.numeric(gsub(",", ".", df$Profit))
     df <- data.frame(price,profit)
     df <- df[order(df$price, decreasing = FALSE),]
     price <- as.numeric(df$price)
     profit <- as.numeric(df$profit)
-    
-    plot(x = price,
-         y = profit,
+    list(price = price, profit = profit)
+})
+  
+  output$plot <- renderPlot({
+    plot(x = data()$price,
+         y = data()$profit,
          xlab = "Cena (v EUR/MWh)",
          ylab = "Profit (v EUR)",
          pch = 20, cex=1.5)
     abline(h = 0, lty='dashed')
-    
-    opt_fit(price,profit)
   })
   
-  klik <- eventReactive(input$btn, {
-    print(opt_fit(price,profit)[1]) 
-    print(opt_fit(price,profit)[2])
+  #mogoče bi narisala opcijo kar na isti graf, ampak neznam naštimat da se nariše na isto sliko
+  
+  narisi <- eventReactive(input$opcija, {
+    plot(x = data()$price,
+         y = data()$profit,
+         xlab = "Cena (v EUR/MWh)",
+         ylab = "Profit (v EUR)",
+         pch = 20, cex=1.5)
+    abline(h = 0, lty='dashed')
+    opt_fit(data()$price,data()$profit)
+    })
+  
+  output$plot2 <- renderPlot({
+    narisi()
+  })
+  
+  klik <- eventReactive(input$parametri, {
+    print(opt_fit(data()$price,data()$profit))
   })
     
-  output$text <- renderText({
+  output$text <- renderPrint({
     klik()
   })
-  
-  #output$text <- renderText({outputArgs = list(print(opt_fit(price,profit)[1]),print(opt_fit(price,profit)[2]))})
-  
 }
 )
-
 
 shinyApp(ui = ui, server = server)
 
@@ -88,8 +102,8 @@ shinyApp(ui = ui, server = server)
 
 #TEŽAVE:
 # na začetku že takoj izpiše need finite xlim values, zakaj?
-# zakaj moja minty tema ne dela :(
-# a obstaja kakšen simpl trik, da zgleda aplikacija bolj proper
 # kako usposbit gumb parametri
 # zakaj mi rmd ne generira pdf datoteke?
 # kako naredim, da aplikacija laufa v splošnem kjerkoli?
+
+

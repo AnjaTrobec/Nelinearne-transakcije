@@ -1,4 +1,20 @@
 opt_fit <- function(price, profit){
+  # FUNKCIJA OPT_FIT: nariše optimalen fit na že klican plot!
+  
+  #spremenimo in dodamo začetni plot že tukaj:
+  price <- as.numeric(gsub(",", ".", price))
+  profit <- as.numeric(gsub(",", ".", profit))
+  df <- data.frame(price,profit)
+  df <- df[order(df$price, decreasing = FALSE),]
+  price <- as.numeric(df$price)
+  profit <- as.numeric(df$profit)
+  plot(x = price,
+       y = profit,
+       xlab = "Cena (v EUR/MWh)",
+       ylab = "Profit (v EUR)",
+       pch = 20, cex=1.5)
+  abline(h = 0, lty='dashed')
+  
   if (cor(price, profit) < 0){
     #nakup put opcije (3) ali prodaja call opcije (2)
     #pogledamo napake odstopanj in odlocimo ali gre za put ali call
@@ -22,19 +38,16 @@ opt_fit <- function(price, profit){
       odstopanje1 <- rep(0,length(price)) #odstopanje pri aproksimaciji z vodoravno premico
       odstopanje2 <- rep(0,length(price)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
       najboljsi_K = 0
-      
       for (K in 1:length(price)){
-        #VODORAVNA PREMICA
         premica1 <- profit[K]
         napaka1 <- rep(0,length(price[K:length(profit)]))
         profiti <- profit[K:length(profit)]
+        
         for (i in 1:length(napaka1)){
           napaka1[i] <- (((premica1 - profiti[i])^2))
         }
         odstopanje1[K] <- sum(napaka1)
         
-        
-        #POŠEVNA PREMICA
         premica2 <- lm(profit[1:K] ~ price[1:K])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]
@@ -77,7 +90,6 @@ opt_fit <- function(price, profit){
       najboljsi_K = 0
       
       for (K in 1:round(length(price)/2,0)){
-        #VODORAVNA PREMICA
         premica1 <- mean(profit[1:K])
         napaka1 <- rep(0,length(price[1:K]))
         for (i in 1:length(napaka1)){
@@ -86,7 +98,6 @@ opt_fit <- function(price, profit){
         odstopanje1[K] <- sum(napaka1)
         
         
-        #POŠEVNA PREMICA
         premica2 <- lm(profit[(round(length(price)/2,0)+K):length(price)] ~ price[(round(length(price)/2,0)+K):length(price)])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]
@@ -115,7 +126,7 @@ opt_fit <- function(price, profit){
     meja <- length(price)/4
     povpr1 <- mean(profit[1:meja])
     er1 <- 0
-    
+
     for (i in 1:meja){
       er1 <- er1 + (profit[i] - povpr1)^2
     }
@@ -135,7 +146,6 @@ opt_fit <- function(price, profit){
       odstopanje1 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z vodoravno premico
       odstopanje2 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
       najboljsi_K = 0
-      
       
       for (K in 1:round(length(price)/2,0)){
         #VODORAVNA PREMICA
@@ -216,7 +226,8 @@ opt_fit <- function(price, profit){
       #print(komentar)
     }
   }
-  output <- list(tip=tip_opcije, parametri=komentar)
-  return(output)
+  
+  komentarji <- c(tip_opcije,komentar)
+  return(komentarji)
 }
 
