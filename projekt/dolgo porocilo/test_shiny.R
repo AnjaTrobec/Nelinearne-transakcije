@@ -2,11 +2,12 @@ library(shiny)
 library(DT)
 library(tidyverse)
 library(bslib)
+source('C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterij/matematika z racunalnikom/Nelinearne-transakcije/Nelinearne-transakcije/projekt/dolgo porocilo/funkcija.R', local = TRUE)
 
 # Define UI
-ui <- fluidPage(
+ui <- shinyUI(fluidPage(
   
-  theme = bs_theme(version = 4, bootswatch = "minty", bg='minty'),
+  theme = bs_theme(version = 4, bootswatch = "minty"),
                 
   titlePanel(title = 'Nelinearne transakcije'),
   
@@ -25,7 +26,7 @@ ui <- fluidPage(
   mainPanel(plotOutput("plot", width = "800px", height = '600px'),
            actionButton("btn","Pokaži parametre"),
            textOutput("text"))
-)
+))
 
 # Define server logic
 server <- shinyServer(function(input, output) {
@@ -39,13 +40,14 @@ server <- shinyServer(function(input, output) {
     return(df)
   })
   
+  
+  
   output$sample_table<- DT::renderDataTable({
     df <- branje_datoteke()
     DT::datatable(df)
   })
   
   output$plot <- renderPlot({
-    source('C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterij/matematika z racunalnikom/Nelinearne-transakcije/Nelinearne-transakcije/projekt/dolgo porocilo/funkcija.R', local = TRUE)
     df <- branje_datoteke()
     
     price <- as.numeric(gsub(",", ".", df$Price))
@@ -54,12 +56,14 @@ server <- shinyServer(function(input, output) {
     df <- df[order(df$price, decreasing = FALSE),]
     price <- as.numeric(df$price)
     profit <- as.numeric(df$profit)
+    
     plot(x = price,
          y = profit,
          xlab = "Cena (v EUR/MWh)",
          ylab = "Profit (v EUR)",
          pch = 20, cex=1.5)
     abline(h = 0, lty='dashed')
+    
     opt_fit(price,profit)
   })
   
@@ -85,7 +89,7 @@ shinyApp(ui = ui, server = server)
 #TEŽAVE:
 # na začetku že takoj izpiše need finite xlim values, zakaj?
 # zakaj moja minty tema ne dela :(
-# a obstaja kakšen simpl trik, da zgleda aplikacija veliko bolj proper
+# a obstaja kakšen simpl trik, da zgleda aplikacija bolj proper
 # kako usposbit gumb parametri
 # zakaj mi rmd ne generira pdf datoteke?
 # kako naredim, da aplikacija laufa v splošnem kjerkoli?
