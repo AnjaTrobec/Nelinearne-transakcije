@@ -32,7 +32,7 @@ Moja naloga je poiskati Evropsko opcijo, ki najboljše opiše nelinearno transak
   
   $$(S,V) $$
 
-Iskani Evropski opciji, ki bo ekvivalentna transakciji, je potrebno določiti najslednje parametre:
+Iskani Evropski opciji, ki bo ekvivalentna transakciji, je potrebno določiti naslednje parametre:
   
 * izvršilno cena ($K$, *angl. strike price*), 
 * količino ($Q$) in 
@@ -51,7 +51,7 @@ To nas pripelje do štirih različnih situacij, med katerimi iščemo tisto, ki 
   
   <h4> 1. NAKUP EVROPSKE CALL OPCIJE </h4>
   
- **Call opcija** podeljuje **lastniku (kupcu opcije)** pravico za nakup določenega inštrumenta (*angl. underlying asset*) po vnaprej določeni izvršilni ceni na dolocen dan (kadar govorimo o Evropski opciji) ali do določenega dne (kadar imamo opravka z Ameriško opcijo). Lastniku call opcija ne predstavlja obveznosti, pač pa priložnost (rečemo, da mu nudi opcijskost), da opcijo izvrši v primeru, če cena inštrumenta na trgu naraste. Za call opcijo rečemo, da je:
+ **Call opcija** podeljuje **lastniku (kupcu opcije)** pravico za nakup določenega inštrumenta (*angl. underlying asset*) po vnaprej določeni izvršilni ceni na določen dan (kadar govorimo o Evropski opciji) ali do določenega dne (kadar imamo opravka z Ameriško opcijo). Lastniku call opcija ne predstavlja obveznosti, pač pa priložnost (rečemo, da mu nudi opcijskost), da opcijo izvrši v primeru, če cena inštrumenta na trgu naraste. Za call opcijo rečemo, da je:
   
 * **in the money** - kadar je cena inštrumenta nad izvršilno ceno,
 * **at the money** - kadar sta cena inštrumenta in izvršilna cena enaki,
@@ -66,13 +66,13 @@ Formula za vrednotenje izplačil opcije ob času t:
   
   <h4> 2. NAKUP EVROPSKE PUT OPCIJE </h4>
   
- **Put opcija** podeljuje  **lastniku (kupcu opcije) ** pravico za prodajo določenega inštrumenta po vnaprej določeni izvršilni ceni na določen dan ali do določenega dne. Lastniku call opcija ne predstavlja obveznosti, pač pa priložnost (rečemo, da mu nudi opcijskost), da opcijo izvrši v primeru, če cena inštrumenta na trgu pade. Za call opcijo rečemo, da je:
+ **Put opcija** podeljuje  **lastniku (kupcu opcije) ** pravico za prodajo določenega inštrumenta po vnaprej določeni izvršilni ceni na določen dan ali do določenega dne. Lastniku call opcija ne predstavlja obveznosti, pač pa priložnost (rečemo, da mu nudi opcijskost), da opcijo izvrši v primeru, če cena inštrumenta na trgu pade. Za put opcijo rečemo, da je:
   
 * **in the money** - kadar je cena inštrumenta pod izvršilno ceno,
 * **at the money** - kadar sta cena inštrumenta in izvršilna cena enaki,
 * **put of the money** - kadar je cena instumenta nad izvršilno ceno.
 
-Enako kot pri nakupu evropske call opcije lahko opazimo, da ima kupec evropske put opcije **neomejen dobicek** in na drugi strani  **izgubo omejeno s plačano premijo**. Drugače povedano, največ kar lahko kupec izgubi je premija, ki jo plača za nakup opcije v primeru, da opcije ne izvrši. 
+Enako kot pri nakupu evropske call opcije lahko opazimo, da ima kupec evropske put opcije **neomejen dobiček** in na drugi strani  **izgubo omejeno s plačano premijo**. Drugače povedano, največ kar lahko kupec izgubi je premija, ki jo plača za nakup opcije v primeru, da opcije ne izvrši. 
 Formula za vrednotenje izplacil opcije ob času t: 
   $$ V_t = max(K-S_t,0) - premija = (K-S_t)^+ - premija$$
   
@@ -81,7 +81,7 @@ Formula za vrednotenje izplacil opcije ob času t:
   
   <h4> 3. PRODAJA EVROPSKE CALL OPCIJE </h4>
   
-Zdaj se postavimo v vlogo izdajatelja opcije. S tem ko **opcijo prodamo**, zanjo **prejmemo premijo** in se zavežemo k izplačilu v primeru, da kupec opcijo ob dospelosti izvrši. Torej je v primeru prodaje call opcije **dobicek navzgor omejen s prejeto premijo** in **izguba navzdol neomejena** (do velike izgube pride, če cena inštrumenta na trgu naraste). 
+Zdaj se postavimo v vlogo izdajatelja opcije. S tem ko **opcijo prodamo**, zanjo **prejmemo premijo** in se zavežemo k izplačilu v primeru, da kupec opcijo ob dospelosti izvrši. Torej je v primeru prodaje call opcije **dobiček navzgor omejen s prejeto premijo** in **izguba navzdol neomejena** (do velike izgube pride, če cena inštrumenta na trgu naraste). 
 
 Formula za vrednotenje izplačil opcije ob času t: 
    $$ V_t = premija - max(S_t-K,0) = premija - (S_t - K)^+ $$
@@ -199,7 +199,7 @@ Končno iz vsega opisanega sestavimo algoritem, ki bo izračunal iskane parametr
 
 <h3> 3. ALGORITEM </h3>
 
-Algoritem sprejme csv datoteko sestavljeno iz dveh stolpcev. V prvem stolpcu najdemo ceno inštrumenta izrazeno v EUR/MWh in v drugem stolpcu najdemo izplačilo pri dani ceni, izrazeno v EUR. Algoritem podatke prebere in najprej določi, za katero vrsto opcije gre. To stori na naslednji nacin:
+Algoritem sprejme csv datoteko sestavljeno iz dveh stolpcev. V prvem stolpcu najdemo ceno inštrumenta izrazeno v EUR/MWh in v drugem stolpcu najdemo izplačilo pri dani ceni, izrazeno v EUR. Algoritem podatke prebere in najprej določi, za katero vrsto opcije gre. To stori na naslednji način:
   
   1. Algoritem **izračuna korelacijo** med podatki in s tem izbiro med štirimi možnostmi prevede na izbiro med spodnjima dvema:
   
