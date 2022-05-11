@@ -1,6 +1,4 @@
 opt_fit <- function(price, profit){
-  # FUNKCIJA OPT_FIT: nariše optimalen fit na že klican plot!
-  
   #spremenimo in dodamo začetni plot že tukaj:
   price <- as.numeric(gsub(",", ".", price))
   profit <- as.numeric(gsub(",", ".", profit))

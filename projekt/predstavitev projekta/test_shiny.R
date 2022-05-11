@@ -27,10 +27,11 @@ ui <- shinyUI(fluidPage(
   DT::dataTableOutput("sample_table")),
   
   mainPanel(plotOutput("plot", width = "800px", height = '600px'),
-            actionButton("opcija", "Nariši opcijo"),
+            checkboxInput("opcija", "Nariši opcijo", value = FALSE),
             actionButton("parametri", "Pokaži parametre"),
             verbatimTextOutput("text"),
-            plotOutput("plot2", width = "800px", height = '600px')))
+            plotOutput("plot2", width = "800px", height = '600px'))
+  )
 ))
 
 # Define server logic
@@ -62,30 +63,41 @@ server <- shinyServer(function(input, output) {
 })
   
   output$plot <- renderPlot({
+    if (!input$opcija){
     plot(x = data()$price,
          y = data()$profit,
          xlab = "Cena (v EUR/MWh)",
          ylab = "Profit (v EUR)",
          pch = 20, cex=1.5)
     abline(h = 0, lty='dashed')
+    }
+    else {
+      plot(x = data()$price,
+           y = data()$profit,
+           xlab = "Cena (v EUR/MWh)",
+           ylab = "Profit (v EUR)",
+           pch = 20, cex=1.5)
+      abline(h = 0, lty='dashed')
+      opt_fit(data()$price,data()$profit)
+    }
   })
   
   #mogoče bi narisala opcijo kar na isti graf, ampak neznam naštimat da se nariše na isto sliko
   
-  narisi <- eventReactive(input$opcija, {
-    plot(x = data()$price,
-         y = data()$profit,
-         xlab = "Cena (v EUR/MWh)",
-         ylab = "Profit (v EUR)",
-         pch = 20, cex=1.5)
-    abline(h = 0, lty='dashed')
-    opt_fit(data()$price,data()$profit)
-    })
-  
-  output$plot2 <- renderPlot({
-    narisi()
-  })
-  
+  # narisi <- eventReactive(input$opcija, {
+  #   plot(x = data()$price,
+  #        y = data()$profit,
+  #        xlab = "Cena (v EUR/MWh)",
+  #        ylab = "Profit (v EUR)",
+  #        pch = 20, cex=1.5)
+  #   abline(h = 0, lty='dashed')
+  #   opt_fit(data()$price,data()$profit)
+  #   })
+  # 
+  # output$plot2 <- renderPlot({
+  #   narisi()
+  # })
+  # 
   klik <- eventReactive(input$parametri, {
     print(opt_fit(data()$price,data()$profit))
   })

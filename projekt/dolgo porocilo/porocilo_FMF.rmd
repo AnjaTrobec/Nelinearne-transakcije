@@ -154,17 +154,20 @@ Primer 'jasne začetne slike' je prikazan na spodnjem grafu.
 # read data
 setwd("C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterij/matematika z racunalnikom/Nelinearne-transakcije/Nelinearne-transakcije/projekt/dolgo porocilo")
 df <- read.csv("podatki.csv", sep=';', header = FALSE, stringsAsFactors=FALSE)
-colnames(df) <- c('Price','Profit')
-df
-
-price <- as.numeric(gsub(",", ".", df$Price))
-profit <- as.numeric(gsub(",", ".", df$Profit))
+colnames(df) <- c('price','profit')
+price <- as.numeric(gsub(",", ".", df$price))
+profit <- as.numeric(gsub(",", ".", df$profit))
+df <- data.frame(price,profit)
+df <- df[order(df$price, decreasing = FALSE),]
+price <- as.numeric(df$price)
+profit <- as.numeric(df$profit)
 ```
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
 #plot data: PRICE vs PROFIT
-plot(x = price,
-     y = profit,
+par(mfrow = c(1,1))
+plot(x = df$price,
+     y = df$profit,
      xlab = "Cena (v EUR/MWh)",
      ylab = "Profit (v EUR)",
      main = "Nakup EU put opcije",
@@ -253,11 +256,25 @@ Prišli smo do jedra algoritma v katerem **iščemo optimalno prileganje izbrane
 
 Opisani algoritem nam vrne:
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
-opt_fit <- function(price, profit){
+opt_fit <- function(df){
+  #spremenimo in dodamo začetni plot že tukaj:
+  price <- as.numeric(gsub(",", ".", df$price))
+  profit <- as.numeric(gsub(",", ".", df$profit))
+  df <- data.frame(price,profit)
+  df <- df[order(df$price, decreasing = FALSE),]
+  price <- as.numeric(df$price)
+  profit <- as.numeric(df$profit)
+  plot(x = price,
+       y = profit,
+       xlab = "Cena (v EUR/MWh)",
+       ylab = "Profit (v EUR)",
+       pch = 20, cex=1.5)
+  abline(h = 0, lty='dashed')
+  
   if (cor(price, profit) < 0){
     #nakup put opcije (3) ali prodaja call opcije (2)
-    
     #pogledamo napake odstopanj in odlocimo ali gre za put ali call
+    
     meja <- length(price)/4
     povpr1 <- mean(profit[1:meja])
     er1 <- 0
@@ -271,27 +288,22 @@ opt_fit <- function(price, profit){
     
     #1. NAKUP PUT OPCIJE__________________________________________________________
     if (er1 > er2){
-      komentar <- paste("Gre za nakup put opcije.")
-      print(komentar)
+      tip_opcije <- paste("Gre za nakup put opcije.")
+      #print(tip_opcije)
       
       odstopanje1 <- rep(0,length(price)) #odstopanje pri aproksimaciji z vodoravno premico
       odstopanje2 <- rep(0,length(price)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
       najboljsi_K = 0
-      
-      
-      #GLAVNA ZANKA
       for (K in 1:length(price)){
-        #VODORAVNA PREMICA
         premica1 <- profit[K]
         napaka1 <- rep(0,length(price[K:length(profit)]))
         profiti <- profit[K:length(profit)]
+        
         for (i in 1:length(napaka1)){
           napaka1[i] <- (((premica1 - profiti[i])^2))
         }
         odstopanje1[K] <- sum(napaka1)
         
-        
-        #POsEVNA PREMICA
         premica2 <- lm(profit[1:K] ~ price[1:K])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]
@@ -305,28 +317,35 @@ opt_fit <- function(price, profit){
       premica2 <- lm(profit[1:najboljsi_K] ~ price[1:najboljsi_K])
       abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue',lwd=2)
       najboljsi_K
+      
+      # ggplot(dataframe(price,profit),aes(x=price,y=profit)) + 
+      #   geom_point(aes(x=price,y=profit)) +
+      #   geom_hline(yintercept=0, linetype="dashed", color = "red") +
+      #   geom_hline(yintercept= profit[najboljsi_K], col = 'red', lwd=2) +
+      #   geom_line(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue',lwd=2)
+      # 
+      
       #points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
       
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
-      količina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(količina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
-      print(komentar)
+      kolicina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      #print(komentar)
       
     }
     
     #PRODAJA CALL OPCIJE__________________________________________________________
     
     if (er2 > er1){
-      komentar <- paste("Gre za prodajo call opcije.")
-      print(komentar)
+      tip_opcije <- paste("Gre za prodajo call opcije.")
+      #print(tip_opcije)
       
       odstopanje1 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z vodoravno premico
       odstopanje2 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
       najboljsi_K = 0
       
       for (K in 1:round(length(price)/2,0)){
-        #VODORAVNA PREMICA
         premica1 <- mean(profit[1:K])
         napaka1 <- rep(0,length(price[1:K]))
         for (i in 1:length(napaka1)){
@@ -335,7 +354,6 @@ opt_fit <- function(price, profit){
         odstopanje1[K] <- sum(napaka1)
         
         
-        #POŠEVNA PREMICA
         premica2 <- lm(profit[(round(length(price)/2,0)+K):length(price)] ~ price[(round(length(price)/2,0)+K):length(price)])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]
@@ -352,9 +370,9 @@ opt_fit <- function(price, profit){
       
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
-      količina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(količina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
-      print(komentar)
+      kolicina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      #print(komentar)
     }
   }
   
@@ -364,7 +382,7 @@ opt_fit <- function(price, profit){
     meja <- length(price)/4
     povpr1 <- mean(profit[1:meja])
     er1 <- 0
-    
+
     for (i in 1:meja){
       er1 <- er1 + (profit[i] - povpr1)^2
     }
@@ -377,14 +395,13 @@ opt_fit <- function(price, profit){
     
     #PRODAJA PUT OPCIJE__________________________________________________________
     if (er1 > er2){
-      komentar <- paste("Gre za prodajo put opcije.")
-      print(komentar)
+      tip_opcije <- paste("Gre za prodajo put opcije.")
+      #print(tip_opcije)
       
       #poiscimo optimalni fit
       odstopanje1 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z vodoravno premico
       odstopanje2 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
       najboljsi_K = 0
-      
       
       for (K in 1:round(length(price)/2,0)){
         #VODORAVNA PREMICA
@@ -415,16 +432,16 @@ opt_fit <- function(price, profit){
       
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
-      količina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(količina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
-      print(komentar)
+      kolicina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      #print(komentar)
       
     }
     
     #NAKUP CALL OPCIJE__________________________________________________________
     if (er2 > er1){
-      komentar <- paste("Gre za nakup call opcije.")
-      print(komentar)
+      tip_opcije <- paste("Gre za nakup call opcije.")
+      #print(tip_opcije)
       
       odstopanje1 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z vodoravno premico
       odstopanje2 <- rep(0,round(length(price)/2,0)) #odstopanje pri aproksimaciji z linearno regresijo (posevni del)
@@ -442,7 +459,7 @@ opt_fit <- function(price, profit){
         odstopanje1[K] <- sum(napaka1)
         
         
-        #POŠEVNA PREMICA
+        #POsEVNA PREMICA
         premica2 <- lm(profit[(round(length(price)/2,0)+K):length(price)] ~ price[(round(length(price)/2,0)+K):length(price)])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]
@@ -460,124 +477,60 @@ opt_fit <- function(price, profit){
       
       strike_price = round(price[najboljsi_K],3)
       premija = abs(round(profit[najboljsi_K],3))
-      količina = abs(round(premica2$coefficients[2],3))
-      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(količina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
-      print(komentar)
-      # 
-      # rezultati <- data.frame(
-      #   a <- c('strike price', 'količina', 'premija'),
-      #   priblizki <- c(strike_price, količina, premija),
-      #   stringsAsFactors = FALSE
-      # )
-      # colnames(rezultati) <- c('0','priblizki')
-      # print(rezultati)
-      
+      kolicina = abs(round(premica2$coefficients[2],3))
+      komentar <- paste("Približek za izvršilno ceno opcije je ", as.character(strike_price), " EUR/MWh,", " za količino ", as.character(kolicina), " MWh", " in za premijo ", as.character(premija), " EUR", ".",sep="")
+      #print(komentar)
     }
   }
+  
+  komentarji <- c(tip_opcije,komentar)
+  return(komentarji)
 }
 ```
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
 #1. podatki, nakup put opcije
 df <- read.csv("podatki.csv", sep=';', header = FALSE, stringsAsFactors=FALSE)
-colnames(df) <- c('Price','Profit')
-if (df$Price[2] > df$Price[3]){
-  df <- df[order(df$Price),]} #podatke uredim po cene padajoce
-df
-price <- as.numeric(gsub(",", ".", df$Price))
-profit <- as.numeric(gsub(",", ".", df$Profit))
+colnames(df) <- c('price','profit')
 ```
+
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
 #narisi graf
-plot(x = price,
-     y = profit,
-     xlab = "Cena (v EUR/MWh)",
-     ylab = "Profit (v EUR)",
-     main = "Nakup put opcije",
-     pch = 20, cex=1.5)
-abline(h = 0, lty='dashed') #meja med poz in neg profiti
-
-opt_fit(price,profit)
+opt_fit(df)
 ```
 
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center", results='hide'}
 #1. podatki, nakup put opcije
 dfA <- read.csv("Naloga_A.csv", sep=';', header = TRUE, stringsAsFactors=FALSE)
-colnames(dfA) <- c('Price','Profit')
-dfA[order(dfA$Price),]
-price <- as.numeric(gsub(",", ".", dfA$Price))
-profit <- as.numeric(gsub(",", ".", dfA$Profit))
+colnames(dfA) <- c('price','profit')
 ```
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center"}
 #narisi graf
-plot(x = price,
-     y = profit,
-     xlab = "Cena (v EUR/MWh)",
-     ylab = "Profit (v EUR)",
-     main = "Nakup call opcije",
-     pch = 20, cex=1.5)
-abline(h = 0, lty='dashed')
-
-opt_fit(price,profit)
+opt_fit(dfA)
 ```
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align="center",results='hide'}
 #3. podatki, nakup put opcije
 dfB <- read.csv("Naloga_B.csv", sep=';', header = TRUE, stringsAsFactors=FALSE)
-colnames(dfB) <- c('Price','Profit')
-
-price <- as.numeric(gsub(",", ".", dfB$Price))
-profit <- as.numeric(gsub(",", ".", dfB$Profit))
-
-dfB <- data.frame(price,profit)
-dfB <- dfB[order(dfB$price, decreasing = FALSE),]
-
-price <- dfB$price
-profit <- dfB$profit
-
-
+colnames(dfB) <- c('price','profit')
 ```
+
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align = 'center'}
 #narisi graf
-plot(x = price,
-     y = profit,
-     xlab = "Cena (v EUR/MWh)",
-     ylab = "Profit (v EUR)",
-     main = "Prodaja call opcije",
-     pch = 20, cex=1.5)
-abline(h = 0, lty='dashed')
-
-opt_fit(price,profit)
+opt_fit(dfB)
 ```
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align = 'center',results='hide'}
 #4.. podatki, nakup put opcije
 dfC <- read.csv("Naloga_C.csv", sep=';', header = TRUE, stringsAsFactors=FALSE)
-colnames(dfC) <- c('Price','Profit')
-
-price <- as.numeric(gsub(",", ".", dfC$Price))
-profit <- as.numeric(gsub(",", ".", dfC$Profit))
-
-dfC <- data.frame(price,profit)
-dfC <- dfC[order(dfC$price,decreasing = FALSE),]
-
-price <- dfC$price
-profit <- dfC$profit
+colnames(dfC) <- c('price','profit')
 ```
 
 ```{r, echo=FALSE, eval=TRUE, results="markup", fig.align = 'center'}
 #narisi graf
-plot(x = price,
-     y = profit,
-     xlab = "Cena (v EUR/MWh)",
-     ylab = "Profit (v EUR)",
-     main = "Nakup call opcije",
-     pch = 20, cex=1.5)
-abline(h = 0, lty='dashed')
-
-opt_fit(price,profit)
+opt_fit(dfC)
 
 ```
 
