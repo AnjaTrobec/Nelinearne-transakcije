@@ -4,7 +4,8 @@ subtitle: "Poročilo"
 author: "Anja Trobec"
 date: "Maj 2022"
 output:
-  #pdf_document: 
+  word_document:
+  pdf_document: 
   html_document:
   printresults: hide
 editor_options:
@@ -536,13 +537,14 @@ opt_fit(dfC)
 
 <br>
 
-<h3> 4. KOMENTARJI </h3>
+<h3> 4. KOMENTARJI IN ZAKLJUČEK </h3>
 
-Algoritem prepozna tip opcije ter pozicijo, nariše ustrezno aproksimacijo in vrne iskane parametre. Dobljene aproksimacije se v nekaterih primerih zdijo precej točne, v drugih nekoliko manj. Na podatkih kjer imamo več šuma, je aproksimacija (vsaj na videz) nekoliko slabša, kar je pričakovano. Kar se tiče nadgradnje algoritma, bi bilo morda smiselno določiti interval zaupanja, torej kolikšna odstopanja dopuščamo in to upoštevati pri izbiri aproksimacije. 
+Algoritem prepozna tip opcije ter pozicijo, nariše ustrezno aproksimacijo in vrne iskane parametre. Dobljene aproksimacije se v nekaterih primerih zdijo precej točne, v drugih nekoliko manj. Na podatkih kjer imamo več šuma, je aproksimacija (vsaj na videz) nekoliko slabša, kar je pričakovano. 
+
+Kar se tiče nadgradnje algoritma, bi bilo morda smiselno določiti interval zaupanja, torej kolikšna odstopanja dopuščamo in to upoštevati pri izbiri aproksimacije. 
 
 Poleg poročila sem izdelala še shiny aplikacijo, ki sprejme csv datoteko, izpiše podatke v obliki tabele, nariše graf, aplicira ustrezno aproksimacijo z evropsko opcijo in vrne iskane parametre. Aplikacija je dostopna na git repozitoriju. 
 
-Za konec, sva razrešila še vprašanje: *Ali se opcijo, kadar je ta 'in the money', vedno splača izvršiti?* Odgovor na vprašanje bi bil **ne**. V primerih, ko je tržna cena le malenkost nad *strike price*, se lahko zgodi, da ob izvršitvi utrpimo izgubo. Razlog za to je v razliki med ponujeno in zahtevano ceno pri izvedeni transakciji.   
 
 
 
