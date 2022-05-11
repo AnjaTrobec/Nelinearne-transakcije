@@ -4,8 +4,8 @@ subtitle: "Poročilo"
 author: "Anja Trobec"
 date: "Maj 2022"
 output:
-  word_document:
-  pdf_document: 
+  #word_document:
+  #pdf_document: 
   html_document:
   printresults: hide
 editor_options:

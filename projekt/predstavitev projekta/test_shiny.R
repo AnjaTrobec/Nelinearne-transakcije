@@ -63,22 +63,25 @@ server <- shinyServer(function(input, output) {
 })
   
   output$plot <- renderPlot({
-    if (!input$opcija){
-    plot(x = data()$price,
-         y = data()$profit,
-         xlab = "Cena (v EUR/MWh)",
-         ylab = "Profit (v EUR)",
-         pch = 20, cex=1.5)
-    abline(h = 0, lty='dashed')
-    }
-    else {
+    podatki = branje_datoteke()
+    if (!is.null(podatki)){
+      if (!input$opcija){
       plot(x = data()$price,
            y = data()$profit,
            xlab = "Cena (v EUR/MWh)",
            ylab = "Profit (v EUR)",
            pch = 20, cex=1.5)
       abline(h = 0, lty='dashed')
-      opt_fit(data()$price,data()$profit)
+      }
+      else {
+        plot(x = data()$price,
+             y = data()$profit,
+             xlab = "Cena (v EUR/MWh)",
+             ylab = "Profit (v EUR)",
+             pch = 20, cex=1.5)
+        abline(h = 0, lty='dashed')
+        opt_fit(data()$price,data()$profit)
+      }
     }
   })
   
