@@ -55,9 +55,9 @@ opt_fit <- function(price, profit){
       
       najboljsi_K <- which(min(odstopanja) == odstopanja)
       premica1 <- mean(profit[najboljsi_K:length(profit)])
-      abline(h = profit[najboljsi_K], col = 'red', lwd=2)
+      abline(h = profit[najboljsi_K], col = 'red', lwd=2, xlim=c(najboljsi_K:length(profit)))
       premica2 <- lm(profit[1:najboljsi_K] ~ price[1:najboljsi_K])
-      abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue',lwd=2)
+      abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue',lwd=2, xlim=c(1:najboljsi_K))
       najboljsi_K
       
       # ggplot(dataframe(price,profit),aes(x=price,y=profit)) + 
@@ -104,9 +104,9 @@ opt_fit <- function(price, profit){
       odstopanja <- odstopanje1 + odstopanje2
       najboljsi_K <- which(min(odstopanja) == odstopanja)
       premica1 <- profit[najboljsi_K]
-      abline(h = profit[najboljsi_K], col = 'red', lwd=2)
+      abline(h = profit[najboljsi_K], col = 'red', lwd=2,xlim=(1:najboljsi_K))
       premica2 <- lm(profit[najboljsi_K:length(price)] ~ price[najboljsi_K:length(price)])
-      abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue', lwd=2)
+      abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue', lwd=2, xlim=c(najboljsi_K:length(price)))
       najboljsi_K
       #points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
       
@@ -166,9 +166,9 @@ opt_fit <- function(price, profit){
       
       najboljsi_K <- which(min(odstopanja) == odstopanja)
       premica1 <- mean(profit[najboljsi_K:length(profit)])
-      abline(h = profit[najboljsi_K], col = 'red', lwd=2)
+      abline(h = profit[najboljsi_K], col = 'red', lwd=2,, xlim=c(najboljsi_K:length(odstopanja)))
       premica2 <- lm(profit[1:najboljsi_K] ~ price[1:najboljsi_K])
-      abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue', lwd=2)
+      abline(premica2$coefficients[1],premica2$coefficients[2], col = 'dark blue', lwd=2, xlim=c(1:najboljsi_K))
       najboljsi_K
       #points(price[najboljsi_K], profit[najboljsi_K],type = "p", col = "green")
       
