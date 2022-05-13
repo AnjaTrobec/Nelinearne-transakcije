@@ -460,7 +460,7 @@ opt_fit <- function(df){
         odstopanje1[K] <- sum(napaka1)
         
         
-        #POsEVNA PREMICA
+        #POŠEVNA PREMICA
         premica2 <- lm(profit[(round(length(price)/2,0)+K):length(price)] ~ price[(round(length(price)/2,0)+K):length(price)])
         odstopanje2[K] <- deviance(premica2)
         odstopanje2[K]

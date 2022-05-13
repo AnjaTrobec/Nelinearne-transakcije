@@ -7,7 +7,7 @@ source('C:/Users/aanja/OneDrive/Dokumenti/fmf/magisterij/matematika z racunalnik
 # Define UI
 ui <- shinyUI(fluidPage(
                 
-  titlePanel(title = 'PROJEKT'),
+  titlePanel(title = 'PROJEKT GEN-I'),
   
   navbarPage(title = "Nelinearne transakcije", 
              theme = bs_theme(version = 4, bootswatch = "minty")
